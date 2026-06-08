@@ -1,0 +1,9 @@
+export { Hero } from "./hero";
+export { SocialProof } from "./social-proof";
+export { Features } from "./features";
+export { Results } from "./results";
+export { MergedPrs } from "./merged-prs";
+export { Installation } from "./installation";
+export { Pricing } from "./pricing";
+export { Faq } from "./faq";
+export { Cta } from "./cta";
