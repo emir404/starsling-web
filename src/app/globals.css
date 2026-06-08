@@ -1,26 +1,194 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Brand (teal family, from Figma) */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-muted: var(--brand-muted);
+
+  /* Blueprint surfaces & lines */
+  --color-rail: var(--rail);
+  --color-hairline: var(--hairline);
+  --color-field: var(--field);
+  --color-highlight: var(--highlight);
+  --color-highlight-danger: var(--highlight-danger);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  /* Type scale (fluid; tight negative tracking on display/headings) */
+  --text-display: clamp(2.75rem, 7vw, 6rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.04em;
+  --text-h2: clamp(1.75rem, 3.5vw, 2.5rem);
+  --text-h2--line-height: 1.05;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.01em;
+  --text-eyebrow: 0.875rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.02em;
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light — canonical, extracted from Figma (node 162:5) */
+:root {
+  --radius: 0rem;
+
+  --background: #fafbfb;
+  --foreground: #080c0d;
+  --card: #ffffff;
+  --card-foreground: #080c0d;
+  --popover: #ffffff;
+  --popover-foreground: #080c0d;
+  --primary: #0c90a6;
+  --primary-foreground: #ffffff;
+  --secondary: #eff3f4;
+  --secondary-foreground: #080c0d;
+  --muted: #eff3f4;
+  --muted-foreground: #52595b;
+  --accent: #e4f1f3;
+  --accent-foreground: #0a4651;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #d7eaed;
+  --input: #d7eaed;
+  --ring: #0c90a6;
+
+  --brand: #0c90a6;
+  --brand-foreground: #ffffff;
+  --brand-dark: #0a7c8f;
+  --brand-bright: #30a6bb;
+  --brand-muted: #5d8f98;
+
+  --rail: #d7eaed;
+  --hairline: #eff3f4;
+  --field: rgba(8, 12, 13, 0.05);
+  --highlight: rgba(48, 166, 187, 0.15);
+  --highlight-danger: rgba(245, 65, 65, 0.1);
+
+  --chart-1: #0c90a6;
+  --chart-2: #30a6bb;
+  --chart-3: #5d8f98;
+  --chart-4: #0a7c8f;
+  --chart-5: #99b8bd;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #080c0d;
+  --sidebar-primary: #0c90a6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff3f4;
+  --sidebar-accent-foreground: #080c0d;
+  --sidebar-border: #d7eaed;
+  --sidebar-ring: #0c90a6;
+}
+
+/* Dark — DERIVED (Figma has no dark design); refine when one exists */
+.dark {
+  --background: #0a0e0f;
+  --foreground: #fafbfb;
+  --card: #11171a;
+  --card-foreground: #fafbfb;
+  --popover: #11171a;
+  --popover-foreground: #fafbfb;
+  --primary: #1fa9be;
+  --primary-foreground: #04181c;
+  --secondary: #18252a;
+  --secondary-foreground: #fafbfb;
+  --muted: #18252a;
+  --muted-foreground: #9fb0b4;
+  --accent: #12303a;
+  --accent-foreground: #cdeaf0;
+  --destructive: #f26d6d;
+  --destructive-foreground: #1a0606;
+  --border: rgba(215, 234, 237, 0.12);
+  --input: rgba(215, 234, 237, 0.16);
+  --ring: #1fa9be;
+
+  --brand: #1fa9be;
+  --brand-foreground: #04181c;
+  --brand-dark: #0a7c8f;
+  --brand-bright: #54c6d8;
+  --brand-muted: #5d8f98;
+
+  --rail: rgba(215, 234, 237, 0.14);
+  --hairline: rgba(215, 234, 237, 0.08);
+  --field: rgba(250, 251, 251, 0.06);
+  --highlight: rgba(48, 166, 187, 0.22);
+  --highlight-danger: rgba(245, 65, 65, 0.18);
+
+  --chart-1: #1fa9be;
+  --chart-2: #54c6d8;
+  --chart-3: #5d8f98;
+  --chart-4: #0a7c8f;
+  --chart-5: #88a7ac;
+
+  --sidebar: #11171a;
+  --sidebar-foreground: #fafbfb;
+  --sidebar-primary: #1fa9be;
+  --sidebar-primary-foreground: #04181c;
+  --sidebar-accent: #18252a;
+  --sidebar-accent-foreground: #fafbfb;
+  --sidebar-border: rgba(215, 234, 237, 0.12);
+  --sidebar-ring: #1fa9be;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
