@@ -30,6 +30,12 @@ const CONCEPTS = [
     description:
       "Splitting pipeline panels — input fans out to parallel runners, then the verdict",
   },
+  {
+    href: "/concepts/hero-5",
+    label: "Hero Concept 5",
+    description:
+      "Blueprint grid — cards materialize on graph paper as the run progresses",
+  },
 ];
 
 export default function ConceptsPage() {
