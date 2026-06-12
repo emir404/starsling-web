@@ -24,6 +24,12 @@ const CONCEPTS = [
     label: "Hero Concept 3",
     description: "Big full-bleed timeline — the camera pans along with the run",
   },
+  {
+    href: "/concepts/hero-4",
+    label: "Hero Concept 4",
+    description:
+      "Splitting pipeline panels — input fans out to parallel runners, then the verdict",
+  },
 ];
 
 export default function ConceptsPage() {
