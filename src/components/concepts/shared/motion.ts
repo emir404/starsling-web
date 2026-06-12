@@ -1,7 +1,19 @@
-import type { Variants } from "motion/react";
+import type { Transition, Variants } from "motion/react";
 
 /** Shared easing for concept animations (same curve as the site header). */
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Appear transition honoring an element's choreography delay. */
+export function appearT(
+  reduce: boolean,
+  delay: number,
+  duration = 0.5,
+): Transition {
+  return reduce ? { duration: 0.3 } : { duration, ease: EASE, delay };
+}
+
+/** Uniform quick exit for beat-driven elements when a cycle wraps. */
+export const HIDE_T: Transition = { duration: 0.3, ease: EASE };
 
 /**
  * Step-swap variants for a scene plane: blur + position + opacity.
