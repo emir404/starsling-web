@@ -19,6 +19,11 @@ const CONCEPTS = [
     label: "Hero Concept 2",
     description: "Animated CI timeline — PR to parallel runners to build passed",
   },
+  {
+    href: "/concepts/hero-3",
+    label: "Hero Concept 3",
+    description: "Big full-bleed timeline — the camera pans along with the run",
+  },
 ];
 
 export default function ConceptsPage() {
