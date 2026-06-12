@@ -98,7 +98,7 @@ export function PipelineBand() {
       </motion.div>
 
       {/* Plinth strip: 70px tall, half-gutter inset, side rules only */}
-      <div className="h-[4.375rem] w-full shrink-0">
+      <div className="h-[4.375rem] w-full shrink-0 border-t border-band-border">
         <div className="mx-auto h-full w-full max-w-[90rem] px-3 md:px-6 lg:px-[3.75rem]">
           <div className="h-full border-x border-band-border" />
         </div>
