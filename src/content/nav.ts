@@ -1,10 +1,10 @@
 import type { FooterColumn, NavLink } from "@/types/content";
 
-/** Primary header navigation — maps to the dedicated marketing routes. */
+/** Primary header navigation — maps to the dedicated marketing routes (order + shortcuts from Figma). */
 export const NAV_LINKS: NavLink[] = [
-  { label: "Features", href: "/features" },
-  { label: "Customers", href: "/customers" },
-  { label: "Pricing", href: "/pricing" },
+  { label: "Customers", href: "/customers", shortcut: "C" },
+  { label: "Features", href: "/features", shortcut: "F" },
+  { label: "Pricing", href: "/pricing", shortcut: "P" },
 ];
 
 /** Footer link columns. `#` placeholders are filled in as those pages ship. */

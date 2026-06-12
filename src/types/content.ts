@@ -1,9 +1,10 @@
 import type { LucideIcon } from "lucide-react";
 
-/** A single navigation or footer link. */
+/** A single navigation or footer link. `shortcut` is the keyboard hint shown as [X] in the header nav. */
 export type NavLink = {
   label: string;
   href: string;
+  shortcut?: string;
 };
 
 /** A titled group of links in the footer. */
