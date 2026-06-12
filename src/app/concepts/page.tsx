@@ -36,6 +36,12 @@ const CONCEPTS = [
     description:
       "Blueprint grid — cards materialize on graph paper as the run progresses",
   },
+  {
+    href: "/concepts/hero-6",
+    label: "Hero Concept 6",
+    description:
+      "Centered hero — hero-1's iso scenes in a framed panel with blueprint margins",
+  },
 ];
 
 export default function ConceptsPage() {
