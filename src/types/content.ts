@@ -56,3 +56,18 @@ export type CustomerLogo = {
   name: string;
   src?: string;
 };
+
+/** Pipeline stages shown in the hero concept stepper. Steps without a scene yet are listed but skipped by the cycle. */
+export type HeroStepId = "input" | "planning" | "parallel" | "output";
+
+/** Copy for the hero concepts. The text group is shared across concepts; only the visual changes. */
+export type HeroContent = {
+  /** "Backed by [YC mark] Combinator" — the mark renders between prefix and suffix. */
+  badge: { prefix: string; suffix: string };
+  headline: string;
+  description: string;
+  form: { placeholder: string; cta: string; href: string };
+  steps: { id: HeroStepId; label: string }[];
+  /** Right-hand caption lines inside the illustration band. */
+  caption: string[];
+};
