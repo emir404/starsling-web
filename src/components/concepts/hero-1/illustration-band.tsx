@@ -13,7 +13,7 @@ import { EASE } from "@/components/concepts/shared/motion";
 import { Orbits } from "./orbits";
 import { Stepper } from "./stepper";
 import { CYCLE, SCENES } from "./steps";
-import { useStepCycle } from "./use-step-cycle";
+import { useStepCycle } from "@/components/concepts/shared/use-step-cycle";
 
 /** Figma's iso projection — one transform so the composition order is exact. */
 const ISO_TRANSFORM = "rotate(-30deg) skewX(30deg) scaleY(0.87)";

@@ -14,6 +14,11 @@ const CONCEPTS = [
     description:
       "Pipeline step cycle — isometric browser window and planning card",
   },
+  {
+    href: "/concepts/hero-2",
+    label: "Hero Concept 2",
+    description: "Animated CI timeline — PR to parallel runners to build passed",
+  },
 ];
 
 export default function ConceptsPage() {

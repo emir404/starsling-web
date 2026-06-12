@@ -22,10 +22,13 @@ const TOUCH_SWIPE_THRESHOLD_PX = 24;
 export function useStepCycle({
   count,
   intervalMs = 2000,
+  intervals,
   ref,
 }: {
   count: number;
   intervalMs?: number;
+  /** Per-step durations (ms); entries missing fall back to `intervalMs`. */
+  intervals?: readonly number[];
   ref: RefObject<HTMLElement | null>;
 }) {
   const [index, setIndex] = useState(0);
@@ -50,9 +53,9 @@ export function useStepCycle({
   // Auto-advance. Keyed on `index` so any advance restarts the wait.
   useEffect(() => {
     if (!inView || !pageVisible || count < 2) return;
-    const id = window.setTimeout(advance, intervalMs);
+    const id = window.setTimeout(advance, intervals?.[index] ?? intervalMs);
     return () => window.clearTimeout(id);
-  }, [index, inView, pageVisible, count, intervalMs, advance]);
+  }, [index, inView, pageVisible, count, intervalMs, intervals, advance]);
 
   // Scroll-down skips ahead — one flick, one step.
   useEffect(() => {
