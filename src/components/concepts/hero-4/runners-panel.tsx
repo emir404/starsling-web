@@ -132,8 +132,9 @@ function RunnerCard({
 /**
  * Runner state node (hero-2's milestone marker): spins as a loader dial while
  * the runner works, resolves to a teal tick, dims to the done grey at the end.
+ * Also reused by hero-5's runner rows.
  */
-function Marker({
+export function Marker({
   shown,
   ticked,
   done,
