@@ -24,7 +24,7 @@ export function GraphGrid() {
               <div
                 key={i}
                 style={{ width: GRID.cell, height: GRID.cell }}
-                className="shrink-0 border-[1.2px] border-[#d0dde1] dark:border-rail"
+                className="shrink-0 border border-[#d0dde1] dark:border-rail"
               />
             ))}
           </div>

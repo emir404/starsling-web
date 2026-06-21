@@ -38,7 +38,7 @@ export function PlanningScene() {
       initial="enter"
       animate="center"
       exit="exit"
-      className="absolute inset-0 border-[1.875px] border-black/5 bg-[rgba(252,252,252,0.8)] shadow-[0_0_30px_0_rgba(0,0,0,0.03)] dark:bg-[rgba(42,50,50,0.8)]"
+      className="absolute inset-0 border border-black/5 bg-[rgba(252,252,252,0.8)] shadow-[0_0_30px_0_rgba(0,0,0,0.03)] dark:bg-[rgba(42,50,50,0.8)]"
     >
       <motion.div variants={row} className="absolute left-[47.78px] top-[47.78px]">
         {/* eslint-disable-next-line @next/next/no-img-element -- static brand SVG; next/image adds no value for an inline vector */}
@@ -64,7 +64,7 @@ export function PlanningScene() {
         <motion.div
           key={top}
           variants={bar}
-          className="absolute left-[47.78px] h-[29.78px] origin-left border-[0.149px] border-black/5 bg-[rgba(8,12,13,0.03)] shadow-[-2.482px_2.482px_0_0_rgba(31,155,139,0.25)] dark:border-white/5 dark:bg-white/[0.03]"
+          className="absolute left-[47.78px] h-[29.78px] origin-left border border-black/5 bg-[rgba(8,12,13,0.03)] shadow-[-2.482px_2.482px_0_0_rgba(31,155,139,0.25)] dark:border-white/5 dark:bg-white/[0.03]"
           style={{ top, width }}
         />
       ))}

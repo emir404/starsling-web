@@ -278,7 +278,7 @@ export function TimelineScene({
             delay={r.delay}
             reduce={reduce}
             hidden={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
-            className="grid size-8 place-items-center border-[0.5px] border-white bg-[#2f4242] text-white shadow-[0_0_12px_rgba(8,12,13,0.03)]"
+            className="grid size-8 place-items-center border border-white bg-[#2f4242] text-white shadow-[0_0_12px_rgba(8,12,13,0.03)]"
             style={{ left: r.x, top: r.y }}
           >
             <motion.div
