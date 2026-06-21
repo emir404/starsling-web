@@ -66,6 +66,12 @@ const CONCEPTS = [
     description:
       "Figma-exact self-driving CI run in a framed dark panel — matrix agents spin up, fan into the merge gate, then the speed/cost payoff",
   },
+  {
+    href: "/concepts/hero-11",
+    label: "Hero Concept 11",
+    description:
+      "Figma-exact two-scene parallel run — one test splits/fans out into five parallel jobs (time saved 1m 18s), then they slide left and fan into a test-reports card that feeds agent memory",
+  },
 ];
 
 export default function ConceptsPage() {
