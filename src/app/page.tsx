@@ -1,13 +1,14 @@
 import {
+  Bottleneck,
   Cta,
   Faq,
-  Features,
   Hero,
+  HowItWorks,
   Installation,
-  MergedPrs,
   Pricing,
-  Results,
+  Prs,
   SocialProof,
+  Testimonials,
 } from "@/components/sections";
 
 export default function Home() {
@@ -15,9 +16,10 @@ export default function Home() {
     <>
       <Hero />
       <SocialProof />
-      <Features />
-      <Results />
-      <MergedPrs />
+      <Bottleneck />
+      <Testimonials />
+      <Prs />
+      <HowItWorks />
       <Installation />
       <Pricing />
       <Faq />

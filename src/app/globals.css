@@ -201,3 +201,49 @@
     @apply font-sans;
   }
 }
+
+/* Render every border at 1.5px — overrides the 1px width Tailwind's
+   border utilities ship with, while leaving zero-width (border-*-0) intact. */
+@layer utilities {
+  .border {
+    border-width: 1.5px;
+  }
+  .border-t {
+    border-top-width: 1.5px;
+  }
+  .border-b {
+    border-bottom-width: 1.5px;
+  }
+  .border-l {
+    border-left-width: 1.5px;
+  }
+  .border-r {
+    border-right-width: 1.5px;
+  }
+  .border-x {
+    border-inline-start-width: 1.5px;
+    border-inline-end-width: 1.5px;
+  }
+  .border-y {
+    border-top-width: 1.5px;
+    border-bottom-width: 1.5px;
+  }
+}
+
+/* Diagonal blueprint hatch fills (background-image only, so a bg-card base shows through).
+   Used by the bottleneck section's comparison bars; reusable elsewhere. */
+@utility bg-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--brand-muted) 20%, transparent) 0 1.5px,
+    transparent 1.5px 12px
+  );
+}
+
+@utility bg-hatch-danger {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(239, 68, 68, 0.2) 0 1.5px,
+    rgba(239, 68, 68, 0.05) 1.5px 12px
+  );
+}

@@ -1,8 +1,12 @@
 export { Hero } from "./hero";
 export { SocialProof } from "./social-proof";
+export { Bottleneck } from "./bottleneck";
 export { Features } from "./features";
 export { Results } from "./results";
+export { Testimonials } from "./testimonials";
+export { Prs } from "./prs";
 export { MergedPrs } from "./merged-prs";
+export { HowItWorks } from "./how-it-works";
 export { Installation } from "./installation";
 export { Pricing } from "./pricing";
 export { Faq } from "./faq";

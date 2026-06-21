@@ -5,8 +5,9 @@ import { Eyebrow } from "@/components/shared/eyebrow";
 
 /**
  * Standard section wrapper rendering the Figma "blueprint" frame: full-bleed
- * with 60px side gutters and 3px vertical rails around a max-width column.
- * Pass `id` to enable anchor-scroll links from the nav.
+ * with 60px side gutters and hairline vertical rails around a max-width column.
+ * Light sections share the `border-hairline` color; dark sections override it
+ * via `containerClassName`. Pass `id` to enable anchor-scroll links from the nav.
  */
 export function Section({
   id,
@@ -23,7 +24,7 @@ export function Section({
     <section id={id} className={cn("w-full px-6 sm:px-[60px]", className)}>
       <div
         className={cn(
-          "mx-auto w-full max-w-[1320px] border-x-[3px] border-rail px-6 py-20 sm:px-14 sm:py-28",
+          "mx-auto w-full max-w-[1320px] border-x border-hairline px-6 py-20 sm:px-14 sm:py-28",
           containerClassName,
         )}
       >

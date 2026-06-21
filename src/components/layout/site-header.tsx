@@ -27,7 +27,7 @@ export function SiteHeader() {
         scrolled ? "bg-header" : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-20 w-full max-w-[90rem] items-center px-6 md:px-12 lg:h-[6.25rem] lg:px-[7.5rem]">
+      <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center px-6 md:px-12 lg:h-[6.25rem]">
         <Link
           href="/"
           aria-label={`${SITE_CONFIG.name} home`}
