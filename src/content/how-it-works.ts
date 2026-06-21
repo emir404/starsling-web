@@ -4,6 +4,7 @@ export const HOW_IT_WORKS: HowItWorksContent = {
   title: "How it works",
   subtitle: "AI made coding 10x faster. CI hasn't kept up, until now.",
   install: {
+    tab: "Swap one line.",
     caption: {
       title: "Swap one line. Install the app.",
       description:
@@ -14,6 +15,7 @@ export const HOW_IT_WORKS: HowItWorksContent = {
     swapTo: "runs-on: starsling-ubuntu",
   },
   speed: {
+    tab: "See the results in your first test.",
     caption: {
       title: "80% faster on day one.",
       description:
@@ -27,6 +29,7 @@ export const HOW_IT_WORKS: HowItWorksContent = {
     baseline: "8:16",
   },
   agents: {
+    tab: "Agents keep making it faster.",
     caption: {
       title: "Agents keep making it faster.",
       description:

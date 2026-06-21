@@ -188,17 +188,20 @@ export type HowItWorksCaption = {
 };
 
 /**
- * Copy for the three-step "How it works" section (Figma 234:547 light /
- * 234:4818 dark). Each card pairs a caption with an animated illustration; this
- * holds the editable copy (captions + the marketing-relevant strings inside the
- * mockups). Purely visual scaffolding (YAML keywords, dot positions, the grid)
- * lives in the illustration component.
+ * Copy for the three-step "How it works" section (Figma 282:135 / 286:2304 /
+ * 286:2386). The three steps share one stage and a tab bar; each step pairs a
+ * tab label with an animated illustration. This holds the editable copy (tab
+ * labels, captions, and the marketing-relevant strings inside the mockups).
+ * Purely visual scaffolding (YAML keywords, dot positions, the grid) lives in
+ * the illustration component.
  */
 export type HowItWorksContent = {
   title: string;
   subtitle: string;
-  /** Card 1 — the one-line runner swap in a code editor. */
+  /** Step 1 — the one-line runner swap in a code editor. */
   install: {
+    /** Tab label, e.g. "Swap one line." */
+    tab: string;
     caption: HowItWorksCaption;
     /** Filename shown in the editor tab. */
     filename: string;
@@ -207,8 +210,10 @@ export type HowItWorksContent = {
     /** The teal "after" line that replaces it. */
     swapTo: string;
   };
-  /** Card 2 — the parallel-jobs timeline. */
+  /** Step 2 — the parallel-jobs timeline. */
   speed: {
+    /** Tab label, e.g. "See the results in your first test." */
+    tab: string;
     caption: HowItWorksCaption;
     /** Mono label, e.g. "8 JOBS IN PARALLEL". */
     jobsLabel: string;
@@ -223,8 +228,10 @@ export type HowItWorksContent = {
     /** Right axis label = the GitHub baseline, e.g. "8:16". */
     baseline: string;
   };
-  /** Card 3 — the agent run that opens an optimization PR. */
+  /** Step 3 — the agent run that opens an optimization PR. */
   agents: {
+    /** Tab label, e.g. "Agents keep making it faster." */
+    tab: string;
     caption: HowItWorksCaption;
     /** Run header: badge label, run number, branch. */
     run: { label: string; ref: string; branch: string };
