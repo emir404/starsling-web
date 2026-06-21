@@ -140,14 +140,18 @@ export function Marker({
   done,
   delay,
   reduce,
+  tickDelay = 0,
 }: {
   shown: boolean;
   ticked: boolean;
   done: boolean;
   delay: number;
   reduce: boolean;
+  /** Extra delay before the loader→tick swap, so a bank's checks can cascade. */
+  tickDelay?: number;
 }) {
   const spinning = !reduce && shown && !ticked;
+  const tickT = reduce ? 0 : tickDelay;
 
   return (
     <Reveal
@@ -160,7 +164,7 @@ export function Marker({
       <motion.span
         initial={false}
         animate={{ opacity: ticked ? 0 : 1 }}
-        transition={{ duration: 0.25 }}
+        transition={{ duration: 0.25, delay: ticked ? tickT : 0 }}
         className="absolute inset-0 block"
       >
         <motion.span
@@ -178,7 +182,9 @@ export function Marker({
       <motion.span
         initial={false}
         animate={ticked ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.7 }}
-        transition={ticked ? { duration: 0.35, ease: EASE } : { duration: 0.2 }}
+        transition={
+          ticked ? { duration: 0.35, ease: EASE, delay: tickT } : { duration: 0.2 }
+        }
         className="absolute inset-0 block"
       >
         <span
