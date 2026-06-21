@@ -42,6 +42,30 @@ const CONCEPTS = [
     description:
       "Centered hero — hero-1's iso scenes in a framed panel with blueprint margins",
   },
+  {
+    href: "/concepts/hero-7",
+    label: "Hero Concept 7",
+    description:
+      "Concept 3's timeline, text removed and centered in frame — for an X post",
+  },
+  {
+    href: "/concepts/hero-8",
+    label: "Hero Concept 8",
+    description:
+      "Workflow-run DAG — matrix jobs fan out in parallel and converge on the merge gate, landing a dramatically low build time",
+  },
+  {
+    href: "/concepts/hero-9",
+    label: "Hero Concept 9",
+    description:
+      "Workflow-run graph on the light blueprint — a fan-in CI DAG animates to Success",
+  },
+  {
+    href: "/concepts/hero-10",
+    label: "Hero Concept 10",
+    description:
+      "Figma-exact self-driving CI run in a framed dark panel — matrix agents spin up, fan into the merge gate, then the speed/cost payoff",
+  },
 ];
 
 export default function ConceptsPage() {
