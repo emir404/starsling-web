@@ -1,6 +1,6 @@
 import { BottleneckDiagram } from "@/components/sections/bottleneck-diagram";
 import { Highlight } from "@/components/shared/highlight";
-import { Section, SectionHeading } from "@/components/shared/section";
+import { SectionHeading } from "@/components/shared/section";
 import { BOTTLENECK } from "@/content/bottleneck";
 
 /** Splits `title` on `highlight` and wraps the matched phrase in the teal marker. */
@@ -23,15 +23,18 @@ function TitleWithHighlight({
 }
 
 /**
- * "CI is the new bottleneck" — Figma 234:395. Heading + two icon problem rows on
- * the left; an animated before/after CI comparison diagram on the right.
+ * "CI is the new bottleneck" — Figma 282:336. Built inline (not via `<Section>`)
+ * so the diagram card bleeds full-height to the right edge with zero right
+ * padding, while the left text column keeps the blueprint gutter + left rail.
+ * Heading sits at the top of the left column, the two icon problem rows at the
+ * bottom; an animated before/after CI comparison diagram fills the right.
  */
 export function Bottleneck() {
   return (
-    <Section id="bottleneck">
-      <div className="grid gap-12 lg:grid-cols-[1fr_minmax(0,36rem)] lg:gap-14">
-        {/* Left: heading at top, problem rows pushed to the bottom */}
-        <div className="flex flex-col gap-12 lg:justify-between">
+    <section id="bottleneck" className="w-full px-6 sm:px-[60px]">
+      <div className="mx-auto flex max-w-[1320px] flex-col border-l border-hairline lg:flex-row">
+        {/* Left: heading (top) + problem rows (bottom), padded blueprint column */}
+        <div className="flex flex-1 flex-col gap-12 px-6 py-16 sm:px-14 lg:min-h-[55rem] lg:justify-between lg:py-[7.5rem] lg:pr-14">
           <SectionHeading
             align="start"
             title={BOTTLENECK.title}
@@ -63,9 +66,12 @@ export function Bottleneck() {
           </div>
         </div>
 
-        {/* Right: animated comparison diagram */}
-        <BottleneckDiagram bars={BOTTLENECK.bars} />
+        {/* Right: full-height comparison diagram, flush to the right edge (zero right padding) */}
+        <BottleneckDiagram
+          bars={BOTTLENECK.bars}
+          className="lg:w-[43.375rem] lg:shrink-0"
+        />
       </div>
-    </Section>
+    </section>
   );
 }
