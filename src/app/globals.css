@@ -247,3 +247,18 @@
     rgba(239, 68, 68, 0.05) 1.5px 12px
   );
 }
+
+/* Horizontal logo marquee (social-proof band). The track renders its list
+   twice, so translateX(-50%) — one copy-width of travel — loops seamlessly. */
+@theme {
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
