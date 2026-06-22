@@ -1,62 +1,173 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, type CSSProperties } from "react";
 
 import { Highlight } from "@/components/shared/highlight";
+import { OrbitRings } from "@/components/shared/orbit-rings";
 import { TESTIMONIALS } from "@/content/testimonials";
-import type { Testimonial } from "@/types/content";
+import type { Testimonial, TestimonialMetric } from "@/types/content";
+
+/** How much the marquee slows while hovered/focused (fraction of base speed). */
+const HOVER_RATE = 0.3;
+
+/** Seconds of scroll per card. Duration scales with card count so the per-card
+ *  pace stays constant however many testimonials there are. */
+const SECONDS_PER_CARD = 14;
 
 /**
- * Testimonials — a centered pull-quote framed by decorative corner quote glyphs
- * (Figma node 234:748). The attribution row is a click-driven carousel: the
- * active testimonial shows a full author card, the rest appear as faded avatars
- * you can click to switch.
+ * Testimonials — a horizontal marquee of full-width blueprint cards (Figma nodes
+ * 282:488, 292:733, 292:161). Each card fills the 1320px window; the track scrolls
+ * continuously so one card slides to the next, clipped at a hairline seam. The
+ * list renders twice so translateX(-50%) loops seamlessly. On hover/focus the
+ * marquee smoothly slows via the Web Animations API `playbackRate` (position-
+ * preserving — no jump, unlike retiming the CSS duration); disabled under
+ * prefers-reduced-motion.
  */
 export function Testimonials() {
-  const [active, setActive] = useState(0);
-  const current = TESTIMONIALS[active];
+  // Rendered twice so the track loops seamlessly at translateX(-50%); the second
+  // copy is aria-hidden so screen readers don't announce testimonials twice.
+  const track = [...TESTIMONIALS, ...TESTIMONIALS];
+  const trackRef = useRef<HTMLUListElement>(null);
+
+  // translateX(-50%) advances the track by exactly TESTIMONIALS.length cards, so
+  // duration = count × per-card keeps each card on screen the same length of time.
+  const durationStyle = {
+    "--marquee-duration": `${TESTIMONIALS.length * SECONDS_PER_CARD}s`,
+  } as CSSProperties;
+
+  // Drop/restore the marquee's playbackRate so it eases between fast and slow
+  // without the visual jump that changing animation-duration would cause.
+  const setRate = (rate: number) => {
+    const animation = trackRef.current?.getAnimations()[0];
+    if (animation) animation.playbackRate = rate;
+  };
 
   return (
     <section
       id="testimonials"
       className="w-full border-y border-hairline bg-card px-6 sm:px-[60px]"
     >
-      <div className="relative mx-auto flex min-h-[480px] w-full max-w-[1320px] items-center justify-center overflow-hidden border-x border-hairline py-16 sm:min-h-[580px]">
-        {/* Decorative corner quote glyphs — desktop only */}
-        <QuoteMark className="absolute left-[55px] top-[55px] hidden h-12 w-[60px] sm:block" />
-        <QuoteMark className="absolute bottom-[56px] right-[55px] hidden h-12 w-[60px] rotate-180 sm:block" />
-
-        <div className="flex w-full max-w-[877px] flex-col items-center gap-[52px] px-6 text-center">
-          <p className="text-xl font-medium leading-[1.4] tracking-[-0.32px] text-foreground sm:text-[32px]">
-            <QuoteText testimonial={current} />
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <AuthorCard testimonial={current} />
-            {TESTIMONIALS.map((t, i) =>
-              i === active ? null : (
-                <button
-                  key={t.author}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  aria-label={`Show testimonial from ${t.author}`}
-                  className="size-16 shrink-0 overflow-hidden border border-hairline opacity-50 transition-opacity hover:opacity-80 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size avatar; next/image adds no value here */}
-                  <img
-                    src={t.avatarSrc}
-                    alt={t.author}
-                    width={64}
-                    height={64}
-                    className="size-full object-cover"
-                  />
-                </button>
-              ),
-            )}
-          </div>
-        </div>
+      {/* @container so each card can size to one window width (100cqw) regardless
+          of the w-max track width — the key to the one-card-at-a-time marquee. */}
+      <div className="relative mx-auto w-full max-w-[1320px] overflow-hidden border-x border-hairline @container">
+        <ul
+          ref={trackRef}
+          style={durationStyle}
+          className="flex w-max [animation:marquee_var(--marquee-duration)_linear_infinite] motion-reduce:animate-none"
+          onMouseEnter={() => setRate(HOVER_RATE)}
+          onMouseLeave={() => setRate(1)}
+          onFocusCapture={() => setRate(HOVER_RATE)}
+          onBlurCapture={() => setRate(1)}
+        >
+          {track.map((t, i) => (
+            <li
+              key={`${t.author}-${i}`}
+              aria-hidden={i >= TESTIMONIALS.length}
+              className="w-[100cqw] shrink-0 border-r border-hairline"
+            >
+              <TestimonialCard testimonial={t} />
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
+  );
+}
+
+/** One full-width testimonial card: quote, attribution row, wordmark + orbit decor. */
+function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+  return (
+    <figure className="relative flex min-h-[480px] flex-col justify-end gap-10 overflow-hidden px-6 pb-6 pt-20 sm:min-h-[524px] sm:gap-12 sm:p-14">
+      {/* Faint orbit rings tucked into the top-right corner (hero export reads on a
+          light surface; the white /problem export would be invisible here). */}
+      <OrbitRings
+        src="/hero/orbits.svg"
+        imgClassName="opacity-100"
+        className="-top-[38%] -right-[8%] z-0 w-[58%]"
+      />
+
+      {/* Company wordmark, top-right */}
+      <div className="absolute right-6 top-6 z-10 sm:right-14 sm:top-14">
+        <Wordmark testimonial={testimonial} />
+      </div>
+
+      {/* Decorative corner quote glyphs — desktop only */}
+      <QuoteMark className="absolute left-6 top-6 z-0 hidden h-12 w-[60px] sm:left-14 sm:top-14 sm:block" />
+      <QuoteMark className="absolute bottom-6 right-6 z-0 hidden h-12 w-[60px] rotate-180 sm:bottom-14 sm:right-14 sm:block" />
+
+      <blockquote className="relative z-10 max-w-[1040px] text-xl font-medium leading-[1.4] tracking-[-0.32px] text-foreground sm:text-[32px]">
+        <QuoteText testimonial={testimonial} />
+      </blockquote>
+
+      <figcaption className="relative z-10 flex flex-wrap items-stretch gap-3 sm:gap-4">
+        <AuthorCard testimonial={testimonial} />
+        {testimonial.metrics?.map((metric) => (
+          <MetricChip key={metric.label} metric={metric} />
+        ))}
+      </figcaption>
+    </figure>
+  );
+}
+
+/** Author lockup: avatar + name/role in a hairline-framed chip. */
+function AuthorCard({ testimonial }: { testimonial: Testimonial }) {
+  return (
+    <div className="flex w-[254px] max-w-full items-center gap-4 border border-hairline bg-background">
+      {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size avatar; next/image adds no value here */}
+      <img
+        src={testimonial.avatarSrc}
+        alt={testimonial.author}
+        width={64}
+        height={64}
+        className="size-16 shrink-0 border-r border-hairline object-cover"
+      />
+      <div className="flex min-w-0 flex-col gap-1 pr-3 text-left">
+        <span className="truncate text-base font-medium leading-tight text-foreground">
+          {testimonial.author}
+        </span>
+        <span className="truncate text-sm leading-tight text-foreground/70">
+          {testimonial.role}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** A single stat chip: big mono figure + label/detail. */
+function MetricChip({ metric }: { metric: TestimonialMetric }) {
+  return (
+    <div className="flex items-center gap-4 border border-brand/20 bg-brand/10 px-4 py-3.5">
+      <span className="font-mono text-[28px] font-bold uppercase leading-none tracking-[-0.32px] text-brand sm:text-[32px]">
+        {metric.value}
+      </span>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-base font-medium leading-none text-foreground">
+          {metric.label}
+        </span>
+        <span className="text-sm leading-tight text-foreground/80">
+          {metric.detail}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/** Company wordmark — the brand SVG when available, else the name as text. */
+function Wordmark({ testimonial }: { testimonial: Testimonial }) {
+  if (testimonial.logoSrc) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- static brand wordmark SVG; next/image adds no value for an inline vector
+      <img
+        src={testimonial.logoSrc}
+        alt={`${testimonial.company} logo`}
+        className="h-7 w-auto dark:invert"
+      />
+    );
+  }
+  return (
+    <span className="font-sans text-2xl font-medium tracking-tight text-foreground">
+      {testimonial.company}
+    </span>
   );
 }
 
@@ -72,40 +183,6 @@ function QuoteText({ testimonial }: { testimonial: Testimonial }) {
       <Highlight>{highlight}</Highlight>
       {rest.join(highlight)}
     </>
-  );
-}
-
-/** The active testimonial's author card: avatar + name/role + optional wordmark. */
-function AuthorCard({ testimonial }: { testimonial: Testimonial }) {
-  return (
-    <div className="relative flex w-[362px] max-w-full shrink-0 items-center gap-4 overflow-hidden border border-hairline bg-background">
-      {/* eslint-disable-next-line @next/next/no-img-element -- small fixed-size avatar; next/image adds no value here */}
-      <img
-        src={testimonial.avatarSrc}
-        alt={testimonial.author}
-        width={64}
-        height={64}
-        className="size-16 shrink-0 border-r border-hairline object-cover"
-      />
-      <div className="flex flex-col gap-1 text-left">
-        <span className="text-base font-medium leading-tight text-foreground">
-          {testimonial.author}
-        </span>
-        <span className="text-sm leading-tight text-foreground/70">
-          {testimonial.role}
-        </span>
-      </div>
-      {testimonial.logoSrc ? (
-        // eslint-disable-next-line @next/next/no-img-element -- static brand wordmark SVG; next/image adds no value for an inline vector
-        <img
-          src={testimonial.logoSrc}
-          alt={`${testimonial.company} logo`}
-          width={77}
-          height={12}
-          className="absolute right-[19px] top-1/2 h-3 w-[77px] -translate-y-1/2 dark:invert"
-        />
-      ) : null}
-    </div>
   );
 }
 

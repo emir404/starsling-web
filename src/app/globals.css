@@ -249,7 +249,9 @@
 }
 
 /* Horizontal logo marquee (social-proof band). The track renders its list
-   twice, so translateX(-50%) — one copy-width of travel — loops seamlessly. */
+   twice, so translateX(-50%) — one copy-width of travel — loops seamlessly.
+   (The testimonials marquee drives its own `marquee` animation inline so it can
+   slow down on hover via the Web Animations API.) */
 @theme {
   --animate-marquee: marquee 40s linear infinite;
 }
