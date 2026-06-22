@@ -143,7 +143,7 @@ export function EditorCard() {
         <span className="ml-5 size-2 rounded-full bg-foreground/20" />
         <span className="ml-2 size-2 rounded-full bg-foreground/20" />
         <span className="ml-2 size-2 rounded-full bg-foreground/20" />
-        <div className="mx-3 flex h-8 flex-1 items-center justify-center bg-foreground/[0.03]">
+        <div className="mx-3 flex h-8 flex-1 items-center justify-start px-3 bg-foreground/[0.03]">
           <span className="font-mono text-sm text-foreground">{filename}</span>
         </div>
       </div>
