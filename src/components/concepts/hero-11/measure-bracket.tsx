@@ -34,10 +34,9 @@ export function MeasureBracket({
       <motion.path
         initial={false}
         d={d}
-        stroke="rgba(255,255,255,0.3)"
+        stroke="rgba(215,234,237,0.3)"
         strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinejoin="miter"
         animate={{ pathLength: shown ? 1 : 0, opacity: shown ? 1 : 0 }}
         transition={shown ? appearT(reduce, 0, 0.6) : HIDE_T}
       />

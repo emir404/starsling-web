@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { HeroTextGroup } from "@/components/concepts/shared/hero-text-group";
 import { ParallelRunStage } from "./parallel-run-stage";
+import { OrbitField } from "./orbit-field";
 
 /**
  * Panel surface — always-dark, fixed Figma colors (panel `#191f20`, hairline
@@ -23,8 +24,10 @@ const PANEL_STYLE = {
  * light page with a 1rem frame; the panel caps at 1920px, stays centered on
  * ultrawide and fills the screen below the global header, holding the shared
  * headline/form (top) over the looping two-scene diagram (below). The `dark`
- * scope + `text-white` give the un-classed headline/badge their white treatment;
- * a faint dot-grid sits behind, matching the Figma panel texture.
+ * scope + `text-white` give the un-classed headline/badge their white treatment.
+ * The diagram lives in its own slightly-lighter card (`rgba(30,37,39,0.9)`) inset
+ * from the panel — the Figma contrast surface — textured by a faint dot-grid and
+ * a bottom-right radar-target overlay; the header zone above it stays plain.
  */
 export function HeroConcept11() {
   return (
@@ -34,30 +37,43 @@ export function HeroConcept11() {
           className="dark relative flex min-h-[calc(100svh-7rem)] flex-col overflow-hidden border text-white lg:min-h-[calc(100svh-8.25rem)]"
           style={PANEL_STYLE}
         >
-          {/* faint blueprint dot-grid — the Figma panel texture */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 overflow-hidden"
-          >
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, rgba(215,234,237,0.1) 1px, transparent 1px)",
-                backgroundSize: "32px 32px",
-                maskImage:
-                  "radial-gradient(130% 110% at 50% 50%, #000 60%, transparent 100%)",
-                WebkitMaskImage:
-                  "radial-gradient(130% 110% at 50% 50%, #000 60%, transparent 100%)",
-              }}
-            />
-          </div>
-
           {/* shared headline/form — Figma panel insets (≈32px sides, flush top) */}
           <HeroTextGroup className="relative z-10 shrink-0 lg:px-8 lg:pt-16 lg:pb-6" />
-          {/* diagram canvas — capped + centered to the text group's max width so it
-              never outgrows the headline/form block on ultrawide screens */}
-          <ParallelRunStage className="relative z-10 mx-auto w-full max-w-[90rem]" />
+
+          {/* illustration card — distinct surface (~rgb(29,37,38) over the #191f20
+              panel), 16px insets, no border, clips the orbit. flex-1 fills the
+              panel; the content-driven-height stage sits vertically centered
+              inside, matching Figma. */}
+          <div
+            className="relative z-10 mx-4 mb-4 flex min-h-0 flex-1 items-center justify-center overflow-hidden"
+            style={{ background: "rgba(30,37,39,0.9)" }}
+          >
+            {/* faint blueprint dot-grid — now textures the card surface */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 overflow-hidden"
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle, rgba(215,234,237,0.1) 1px, transparent 1px)",
+                  backgroundSize: "32px 32px",
+                  maskImage:
+                    "radial-gradient(120% 120% at 50% 50%, #000 70%, transparent 100%)",
+                  WebkitMaskImage:
+                    "radial-gradient(120% 120% at 50% 50%, #000 70%, transparent 100%)",
+                }}
+              />
+            </div>
+
+            {/* faint radar-target overlay, bottom-right — behind the diagram */}
+            <OrbitField />
+
+            {/* diagram canvas — capped + centered to the text group's max width so
+                it never outgrows the headline/form block on ultrawide screens */}
+            <ParallelRunStage className="relative z-10 w-full max-w-[90rem]" />
+          </div>
         </div>
       </div>
     </div>

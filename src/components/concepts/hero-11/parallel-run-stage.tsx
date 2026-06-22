@@ -15,12 +15,16 @@ import {
   CANVAS,
   CAPTION_1,
   CAPTION_2,
+  cardLandDelay,
   EDGES_IN,
   EDGES_OUT,
   PARALLEL_NODES,
+  PARALLEL_RUN,
+  PARALLEL_RUN_AT,
   PARALLEL_TITLE,
   RANDOM_NODE,
   REPORTS_NODE,
+  SERIAL_RUN,
   STEP_COUNT,
   sceneOf,
   type ParallelSpec,
@@ -97,17 +101,17 @@ export function ParallelRunStage({ className }: { className?: string }) {
             transformOrigin: "top left",
           }}
         >
-          {/* connectors — behind every card */}
+          {/* connectors — behind every card. Each branch draws in once and then a
+              same-width highlight marches along it continuously while active, so
+              the lines read as jobs actively flowing rather than a one-off blip. */}
           <FanConnectors
             edges={EDGES_OUT}
             active={scene === 1 && beat >= BEAT.split}
-            pulse={beat === BEAT.split}
             reduce={reduceBool}
           />
           <FanConnectors
             edges={EDGES_IN}
             active={beat >= BEAT.reports}
-            pulse={beat === BEAT.reports}
             reduce={reduceBool}
           />
 
@@ -124,7 +128,17 @@ export function ParallelRunStage({ className }: { className?: string }) {
               height: RANDOM_NODE.h,
             }}
           >
-            <TestNode title={RANDOM_NODE.title} pairs={RANDOM_NODE.pairs} ports={{ right: true }} />
+            <TestNode
+              title={RANDOM_NODE.title}
+              pairs={RANDOM_NODE.pairs}
+              ports={{ right: true }}
+              run={{
+                active: scene === 1,
+                delay: 0.4,
+                duration: SERIAL_RUN,
+                reduce: reduceBool,
+              }}
+            />
           </Reveal>
 
           {/* the five parallel cards — persistent, slide 542 → 144 */}
@@ -139,10 +153,11 @@ export function ParallelRunStage({ className }: { className?: string }) {
             />
           ))}
 
-          {/* scene-2 sink — rows fill in as the report is written */}
+          {/* scene-2 sink — the card materializes as the fan-in arrives, then its
+              rows fill one by one as each parallel result is written in. */}
           <Reveal
             shown={beat >= BEAT.reports}
-            delay={0.05}
+            delay={0.4}
             reduce={reduceBool}
             hidden={NODE_HIDDEN}
             style={{
@@ -156,7 +171,12 @@ export function ParallelRunStage({ className }: { className?: string }) {
               title={REPORTS_NODE.title}
               pairs={REPORTS_NODE.pairs}
               ports={{ left: true }}
-              rowReveal={{ shown: beat >= BEAT.reports, reduce: reduceBool }}
+              rowReveal={{
+                shown: beat >= BEAT.reports,
+                reduce: reduceBool,
+                baseDelay: 0.6,
+                stagger: 0.1,
+              }}
             />
           </Reveal>
 
@@ -223,13 +243,22 @@ function ParallelCard({
         left: { duration: reduce ? 0 : 0.6, ease: EASE },
         default: reduce
           ? { duration: 0.3 }
-          : { duration: 0.5, ease: EASE, delay: shown ? 0.05 + index * 0.07 : 0 },
+          : { duration: 0.5, ease: EASE, delay: shown ? cardLandDelay(index) : 0 },
       }}
     >
       <TestNode
         title={PARALLEL_TITLE}
         pairs={1}
         ports={scene === 1 ? { left: true } : { left: true, right: true }}
+        // The five sweeps share one delay (not staggered like the landings), so
+        // they fire *together* — the simultaneity is what reads as parallelism,
+        // and as the speed-up over the lone serial test.
+        run={{
+          active: shown && scene === 1,
+          delay: PARALLEL_RUN_AT,
+          duration: PARALLEL_RUN,
+          reduce,
+        }}
       />
     </motion.div>
   );

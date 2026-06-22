@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 
-import { appearT } from "@/components/concepts/shared/motion";
+import { appearT, EASE } from "@/components/concepts/shared/motion";
 import { COLOR } from "./parallel-run-data";
 
 /**
@@ -22,11 +22,20 @@ export function TestNode({
   pairs = 1,
   ports,
   rowReveal,
+  run,
 }: {
   title: string;
   pairs?: number;
   ports?: { left?: boolean; right?: boolean };
-  rowReveal?: { shown: boolean; reduce: boolean };
+  rowReveal?: {
+    shown: boolean;
+    reduce: boolean;
+    /** First row's delay (s); later rows trail it by `stagger`. */
+    baseDelay?: number;
+    stagger?: number;
+  };
+  /** "Running" progress sweep along the bottom edge (the speed-up signal). */
+  run?: { active: boolean; delay: number; duration: number; reduce: boolean };
 }) {
   const bars = Array.from({ length: pairs }, (_, i) => [
     { key: `${i}a`, h: "h-8" },
@@ -56,7 +65,43 @@ export function TestNode({
 
       {ports?.left && <Port className="-left-2" />}
       {ports?.right && <Port className="-right-2" />}
+
+      {run && <RunBar {...run} />}
     </div>
+  );
+}
+
+/**
+ * The "running" progress sweep along the card's bottom edge — fills left→right
+ * while the job runs, then holds. The lone serial RANDOM test fills slowly (the
+ * bottleneck); the five parallel shards fill together and fast, so the speed-up
+ * reads at a glance. Bright cyan so it pops against the card body.
+ */
+function RunBar({
+  active,
+  delay,
+  duration,
+  reduce,
+}: {
+  active: boolean;
+  delay: number;
+  duration: number;
+  reduce: boolean;
+}) {
+  return (
+    <motion.div
+      className="absolute inset-x-0 bottom-0 h-1 origin-left"
+      style={{ background: COLOR.captionTeal }}
+      // start empty so the fill always sweeps (even on the very first loop),
+      // rather than snapping to full like the beat-state `initial={false}` elements
+      initial={{ scaleX: 0, opacity: 0 }}
+      animate={{ scaleX: active ? 1 : 0, opacity: active ? 1 : 0 }}
+      transition={
+        active
+          ? { duration: reduce ? 0 : duration, ease: EASE, delay: reduce ? 0 : delay }
+          : { duration: 0.2 }
+      }
+    />
   );
 }
 
@@ -72,11 +117,13 @@ function Bar({
 }: {
   h: string;
   index: number;
-  reveal?: { shown: boolean; reduce: boolean };
+  reveal?: { shown: boolean; reduce: boolean; baseDelay?: number; stagger?: number };
 }) {
   if (!reveal) {
     return <div className={`w-full shrink-0 ${h}`} style={BAR_STYLE} />;
   }
+  const base = reveal.baseDelay ?? 0.15;
+  const stagger = reveal.stagger ?? 0.07;
   return (
     <motion.div
       className={`w-full shrink-0 origin-left ${h}`}
@@ -85,7 +132,7 @@ function Bar({
       animate={{ opacity: reveal.shown ? 1 : 0, scaleX: reveal.shown ? 1 : 0.5 }}
       transition={
         reveal.shown
-          ? appearT(reveal.reduce, 0.15 + index * 0.07, 0.4)
+          ? appearT(reveal.reduce, base + index * stagger, 0.4)
           : { duration: 0.2 }
       }
     />

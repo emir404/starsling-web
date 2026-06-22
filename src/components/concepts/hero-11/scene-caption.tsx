@@ -41,7 +41,11 @@ export function SceneCaption({
             key={i}
             initial={false}
             animate={{ opacity: shown ? 1 : 0, y: shown ? 0 : 8 }}
-            transition={shown ? appearT(reduce, 0, 0.5) : { duration: 0.2 }}
+            transition={
+              shown
+                ? appearT(reduce, caption.delays?.[i] ?? 0, 0.5)
+                : { duration: 0.2 }
+            }
           >
             {segments.map((seg, j) => (
               <span key={j} style={seg.teal ? { color: COLOR.captionTeal } : undefined}>
@@ -79,7 +83,7 @@ export function TimeSavedChip({ beat, reduce }: { beat: number; reduce: boolean 
         scale: shown ? 1 : 0.96,
         filter: shown ? "blur(0px)" : "blur(6px)",
       }}
-      transition={shown ? appearT(reduce, 0.1, 0.5) : { duration: 0.2 }}
+      transition={shown ? appearT(reduce, 0.35, 0.5) : { duration: 0.2 }}
     >
       <span
         className="font-mono text-[32px] font-bold uppercase tabular-nums"

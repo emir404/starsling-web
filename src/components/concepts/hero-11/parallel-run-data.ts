@@ -59,15 +59,43 @@ export const BEAT = {
 
 export const STEP_COUNT = 8;
 
-/** Per-beat hold durations (ms) for the auto-advance. ≈14.1s/loop. */
+/**
+ * Per-beat hold durations (ms) for the auto-advance. ≈15.8s/loop. Beats that
+ * carry a cascade (split: fan-out relay + parallel run; timesaved: bracket →
+ * count-up) get extra room so the choreography lands before the beat advances.
+ */
 export const BEAT_MS: readonly number[] = [
-  1600, 1900, 2000, 1400, 1200, 2000, 2200, 1800,
+  1900, 2500, 2300, 1400, 1400, 2300, 2300, 1700,
 ];
 
 /** Scene 2 begins at the `shift` beat (when the cards slide left). */
 export function sceneOf(beat: number): 1 | 2 {
   return beat < BEAT.shift ? 1 : 2;
 }
+
+/* ------------------------------------------------------------- choreography */
+
+/**
+ * Per-element entrance timing (seconds), kept here so the scene-1 "speed-up"
+ * story reads as one designed sequence rather than each component guessing its
+ * own delay. The fan-out is a relay: a connector draws, its card lands at the
+ * tip, and only once all five have arrived do they *run together* — that
+ * simultaneity is what reads as parallelism, and as the win over the lone
+ * serial test (which fills slowly on its own beforehand).
+ */
+/** Gap between consecutive branches as the fan cascades out / converges in. */
+export const BRANCH_STAGGER = 0.1;
+/** How long a connector takes to draw — a card lands just as its line arrives. */
+export const CONNECTOR_DRAW = 0.55;
+/** A parallel card's entrance delay: it pops at the tip of its own connector. */
+export function cardLandDelay(index: number): number {
+  return CONNECTOR_DRAW + index * BRANCH_STAGGER;
+}
+/** When the five parallel runs kick off — together, once the last card landed. */
+export const PARALLEL_RUN_AT = CONNECTOR_DRAW + 4 * BRANCH_STAGGER + 0.5;
+/** Run-sweep durations: the serial test is slow; the parallel shards are quick. */
+export const SERIAL_RUN = 1.5;
+export const PARALLEL_RUN = 0.8;
 
 /* -------------------------------------------------------------------- nodes */
 
@@ -90,11 +118,15 @@ export function inPort(n: { x: number; y: number; h: number }): Point {
   return { x: n.x - 2, y: n.y + n.h / 2 };
 }
 
-/** The single serial test (Scene 1 source). */
+/**
+ * The single serial test (Scene 1 source). `y` is set so its center (y+49 =
+ * 381.5) lines up exactly with the middle parallel card's center, making the
+ * middle fan-out connector perfectly straight (no 1.5px jog).
+ */
 export const RANDOM_NODE: NodeSpec = {
   id: "random",
   x: 103,
-  y: 334,
+  y: 332.5,
   w: 184,
   h: 98,
   title: "RANDOM TEST",
@@ -145,23 +177,29 @@ export type EdgeSpec = {
 };
 
 /**
- * Near-straight branch: leave the source's port horizontal, sweep gently, enter
- * the target's port flat. Short handles keep the lines straight like the Figma.
- * Used for both the fan-out (random → 5) and the fan-in (5 → reports).
+ * Orthogonal branch (blueprint style): leave the source port horizontally to a
+ * shared vertical spine, run along the spine to the target's y, then enter the
+ * target port flat. Sharp 90° corners — no curves. `spineX` is the bus: it sits
+ * near the source for the fan-out, near the target for the fan-in.
  */
-export function edgePath(s: Point, t: Point): string {
-  const k = Math.min(140, Math.abs(t.x - s.x) * 0.4);
-  return `M ${s.x} ${s.y} C ${s.x + k} ${s.y}, ${t.x - k} ${t.y}, ${t.x} ${t.y}`;
+export function edgePath(s: Point, t: Point, spineX: number): string {
+  return `M ${s.x} ${s.y} L ${spineX} ${s.y} L ${spineX} ${t.y} L ${t.x} ${t.y}`;
 }
+
+/** Vertical bus x for the fan-out — just right of RANDOM's output port (x 289). */
+const SPINE_OUT = 380;
+/** Vertical bus x for the fan-in — just left of REPORTS' input port (x 631). */
+const SPINE_IN = 559;
 
 /** Scene 1: RANDOM right-port → each parallel left-port (scene-1 position). */
 export const EDGES_OUT: readonly EdgeSpec[] = PARALLEL_NODES.map((p, i) => ({
   id: `out-${i}`,
-  d: edgePath(outPort(RANDOM_NODE), {
-    x: p.scene1X - 2,
-    y: parallelCenterY(p),
-  }),
-  flowDelay: i * 0.06,
+  d: edgePath(
+    outPort(RANDOM_NODE),
+    { x: p.scene1X - 2, y: parallelCenterY(p) },
+    SPINE_OUT,
+  ),
+  flowDelay: i * BRANCH_STAGGER,
 }));
 
 /** Scene 2: each parallel right-port (scene-2 position) → REPORTS left-port. */
@@ -170,8 +208,9 @@ export const EDGES_IN: readonly EdgeSpec[] = PARALLEL_NODES.map((p, i) => ({
   d: edgePath(
     { x: p.scene2X + p.w + 2, y: parallelCenterY(p) },
     inPort(REPORTS_NODE),
+    SPINE_IN,
   ),
-  flowDelay: i * 0.06,
+  flowDelay: i * BRANCH_STAGGER,
 }));
 
 /* ----------------------------------------------------------------- brackets */
@@ -196,6 +235,8 @@ export type CaptionSpec = {
   /** Paragraphs (teal-segmented). Each reveals at its `showBeats` entry. */
   paragraphs: Segment[][];
   showBeats: number[];
+  /** Per-paragraph entrance delay (s) so each line trails the action it narrates. */
+  delays?: number[];
 };
 
 /** Scene 1 caption — typo "PARALELL" corrected to "PARALLEL". */
@@ -218,6 +259,9 @@ export const CAPTION_1: CaptionSpec = {
     [{ t: "TIME SAVED:" }],
   ],
   showBeats: [BEAT.analyze, BEAT.split, BEAT.timesaved],
+  // line 1 trails RANDOM appearing; line 2 trails the cards landing; "TIME
+  // SAVED:" lands just before the bracket/chip resolve it.
+  delays: [0.3, 0.6, 0.2],
 };
 
 /** Scene 2 caption — grammar "AGENTS USES" corrected to "AGENTS USE". */
@@ -235,6 +279,7 @@ export const CAPTION_2: CaptionSpec = {
     [{ t: "THIS IS HOW IT " }, { t: "SELF-DRIVES", teal: true }],
   ],
   showBeats: [BEAT.reports, BEAT.memory, BEAT.memory],
+  delays: [0.4, 0.3, 0.55],
 };
 
 /* -------------------------------------------------------------- time saved */
