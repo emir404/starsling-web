@@ -72,6 +72,18 @@ const CONCEPTS = [
     description:
       "Figma-exact two-scene parallel run — one test splits/fans out into five parallel jobs (time saved 1m 18s), then they slide left and fan into a test-reports card that feeds agent memory",
   },
+  {
+    href: "/concepts/hero-12",
+    label: "Hero Concept 12",
+    description:
+      "Time-collapse timeline — one long serial test-suite bar splits into five short parallel shards as the wall-clock counts down 13m 20s → 1m 18s, with a TIME SAVED bracket",
+  },
+  {
+    href: "/concepts/hero-13",
+    label: "Hero Concept 13",
+    description:
+      "Self-driving dispatcher — a central StarSling autopilot hub reads the suite and auto-routes shards along radial spokes to five parallel runners (radar sweep, 10× faster)",
+  },
 ];
 
 export default function ConceptsPage() {
