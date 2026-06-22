@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export function SiteHeader() {
         scrolled ? "bg-header" : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center px-6 md:px-12 lg:h-[6.25rem]">
+      <div className="relative mx-auto flex h-20 w-full max-w-[1920px] items-center px-6 md:px-12 lg:h-[6.25rem]">
         <Link
           href="/"
           aria-label={`${SITE_CONFIG.name} home`}
@@ -36,47 +36,54 @@ export function SiteHeader() {
           <Logo />
         </Link>
 
-        {/* Desktop nav — slides from right (top) to beside the logo (scrolled) */}
-        <motion.nav
-          layout
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className={cn(
-            "hidden items-center gap-1 lg:flex",
-            scrolled ? "ml-6" : "ml-auto",
-          )}
-        >
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="bg-brand-bright/5 px-4 py-3 font-mono text-base font-medium uppercase text-foreground/80 transition-colors hover:bg-brand-bright/10 hover:text-foreground"
-            >
-              {link.shortcut ? `[${link.shortcut}] ` : ""}
-              {link.label}
-            </Link>
-          ))}
-        </motion.nav>
-
-        {/* Desktop CTA — appears on scroll */}
-        <AnimatePresence initial={false}>
-          {scrolled ? (
-            <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.96 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="ml-auto hidden lg:block"
-            >
+        {/* Desktop nav + CTA share a LayoutGroup so the nav re-measures and
+            animates to fill the space when the CTA mounts/unmounts on scroll. */}
+        <LayoutGroup>
+          {/* Desktop nav — slides from right (top) to beside the logo (scrolled) */}
+          <motion.nav
+            layout
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className={cn(
+              "hidden items-center gap-1 lg:flex",
+              scrolled ? "ml-6" : "ml-auto",
+            )}
+          >
+            {NAV_LINKS.map((link) => (
               <Link
-                href={SITE_CONFIG.links.waitlist}
-                className={cn(buttonVariants(), "h-auto px-4 py-3 text-base")}
+                key={link.href}
+                href={link.href}
+                className="bg-brand-bright/5 px-4 py-3 font-mono text-base font-medium uppercase text-foreground/80 transition-colors hover:bg-brand-bright/10 hover:text-foreground"
               >
-                Join Waitlist
+                {link.shortcut ? `[${link.shortcut}] ` : ""}
+                {link.label}
               </Link>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+            ))}
+          </motion.nav>
+
+          {/* Desktop CTA — appears on scroll. popLayout pops the exiting CTA
+              out of the flex flow immediately so the nav doesn't briefly share
+              `ml-auto` with it (which parked the nav in the center, then
+              snapped it right once the exit finished). */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {scrolled ? (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="ml-auto hidden lg:block"
+              >
+                <Link
+                  href={SITE_CONFIG.links.waitlist}
+                  className={cn(buttonVariants(), "h-auto px-4 py-3 text-base")}
+                >
+                  Join Waitlist
+                </Link>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </LayoutGroup>
 
         {/* Mobile menu trigger */}
         <div className="ml-auto lg:hidden">

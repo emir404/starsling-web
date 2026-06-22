@@ -149,11 +149,14 @@ export function FooterNetwork({ className }: { className?: string }) {
     (k) => k.split("-").map(Number) as [number, number],
   );
 
+  // `meet` (fit, not `slice`/cover) so the whole plane always shows and no node
+  // ring is ever cropped at the band edges — the footer bg fills the letterbox
+  // margin on viewports off the plane's 1440:680 ratio. At ~1440px it's a 1:1 fit.
   return (
     <svg
       ref={svgRef}
       viewBox={`0 0 ${PLANE.w} ${PLANE.h}`}
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
       className={className}
       style={{ height: "clamp(300px, 50vw, 680px)", width: "100%" }}
