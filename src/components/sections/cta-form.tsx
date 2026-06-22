@@ -29,7 +29,7 @@ export function CtaForm() {
         name="email"
         aria-label="Email address"
         placeholder={form.placeholder}
-        className="flex-1"
+        className="flex-1 border-transparent bg-white/15 text-white/80 placeholder:text-white/60 focus-visible:border-white/40 focus-visible:ring-white/20"
       />
       <Button type="submit" className="px-4 text-base">
         {form.cta}
