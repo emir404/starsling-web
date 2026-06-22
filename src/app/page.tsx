@@ -4,11 +4,12 @@ import {
   Faq,
   Hero,
   HowItWorks,
-  Installation,
+  MergedPrs,
   Pricing,
   Prs,
   SocialProof,
   Testimonials,
+  Video,
 } from "@/components/sections";
 
 export default function Home() {
@@ -16,13 +17,14 @@ export default function Home() {
     <>
       <Hero />
       <SocialProof />
-      <Bottleneck />
-      <Testimonials />
-      <Prs />
       <HowItWorks />
-      <Installation />
+      <Testimonials />
+      <Bottleneck />
+      <MergedPrs />
+      <Prs />
       <Pricing />
       <Faq />
+      <Video />
       <Cta />
     </>
   );

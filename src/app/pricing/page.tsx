@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Cta, Faq, Pricing } from "@/components/sections";
+import { Cta, Faq, Pricing, Testimonials } from "@/components/sections";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -11,6 +11,7 @@ export default function PricingPage() {
   return (
     <>
       <Pricing />
+      <Testimonials />
       <Faq />
       <Cta />
     </>
