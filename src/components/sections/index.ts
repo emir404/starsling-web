@@ -1,5 +1,6 @@
 export { Hero } from "./hero";
 export { SocialProof } from "./social-proof";
+export { Video } from "./video";
 export { Bottleneck } from "./bottleneck";
 export { Features } from "./features";
 export { Results } from "./results";
