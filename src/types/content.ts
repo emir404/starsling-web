@@ -76,20 +76,32 @@ export type FaqItem = {
   answer: string;
 };
 
-/** A customer testimonial shown in the testimonials carousel. */
+/** A stat chip shown on a testimonial card, e.g. "8.2x" / "Shorter job queue". */
+export type TestimonialMetric = {
+  /** Headline figure, e.g. "8.2x" or "5.87×" (rendered uppercase in mono). */
+  value: string;
+  /** What improved, e.g. "Shorter job queue". */
+  label: string;
+  /** Supporting detail, e.g. "14m 48s → 1m 48s". */
+  detail: string;
+};
+
+/** A customer testimonial shown in the testimonials marquee. */
 export type Testimonial = {
   quote: string;
-  /** Exact substring of `quote` to wrap in the teal <Highlight> marker (e.g. a @handle). */
+  /** Exact substring of `quote` to wrap in the teal <Highlight> marker. */
   highlight?: string;
   author: string;
-  /** Secondary line under the name, e.g. "Founder, Better Auth". */
+  /** Secondary line under the name, e.g. "Co-Founder, Mastra". */
   role: string;
-  /** Company name — used for avatar/logo alt text. */
+  /** Company name — wordmark fallback text + avatar/logo alt text. */
   company: string;
   /** Path to the author's avatar image in /public. */
   avatarSrc: string;
-  /** Optional company wordmark (SVG in /public/logos) shown in the author card. */
+  /** Optional company wordmark (SVG in /public/logos); falls back to `company` as text. */
   logoSrc?: string;
+  /** Up to two stat chips shown along the bottom of the card. */
+  metrics?: TestimonialMetric[];
 };
 
 /** A customer logo rendered from a monochrome SVG in /public/logos. */
@@ -133,6 +145,46 @@ export type PrsContent = {
   agents: PrsAgent[];
   /** Closing paragraph, split into runs so multiple phrases can be highlighted. */
   paragraph: PrsParagraphSegment[];
+};
+
+/** One labelled impact metric shown in a merged-PR card (e.g. "−3.5M" / "wall clock"). */
+export type MergedPrStat = {
+  value: string;
+  label: string;
+};
+
+/** A real, merged optimization PR opened by a StarSling agent on a customer repo. */
+export type MergedPr = {
+  /** Source repository, shown as a wordmark in the card footer. */
+  repo: {
+    name: string;
+    /** Wordmark SVG under /public/logos, e.g. "/logos/mastra.svg". */
+    logo: string;
+    /** Intrinsic dimensions (px) for aspect ratio + to avoid layout shift. */
+    width: number;
+    height: number;
+  };
+  /** Status badge text, e.g. "Merged". */
+  status: string;
+  /** Conventional-commit prefix rendered in teal, e.g. "test(chroma):". */
+  type: string;
+  /** Remainder of the PR title, after the prefix. */
+  title: string;
+  /** One- or two-sentence summary of what the agent changed. */
+  description: string;
+  /** Exactly three impact metrics. */
+  stats: MergedPrStat[];
+  /** GitHub PR URL the card links to. */
+  url: string;
+};
+
+/** Copy + data for the "Real PRs from StarSling agents" proof section. */
+export type MergedPrsContent = {
+  title: string;
+  subtitle: string;
+  /** Label on each card's link button, e.g. "View PR". */
+  cta: string;
+  prs: MergedPr[];
 };
 
 /** Tone of a single line in the installation diff card. */
@@ -179,6 +231,21 @@ export type CtaContent = {
   subtitle: string;
   /** Waitlist email-capture form (same shape as HeroContent.form). */
   form: { placeholder: string; cta: string; href: string };
+};
+
+/**
+ * Copy + media for the product-demo video section (Figma node 282:879). The
+ * MP4 is served from Vercel Blob (kept out of the repo, streamed with range
+ * requests so the custom scrubber can seek); the poster still is committed
+ * under /public/videos.
+ */
+export type VideoSectionContent = {
+  /** MP4 source — a Vercel Blob CDN URL. */
+  src: string;
+  /** Poster still shown before playback, under /public. */
+  poster: string;
+  /** Accessible description of the clip, used as the <video> aria-label. */
+  label: string;
 };
 
 /** Caption (bold lead + body) shown beneath a "How it works" illustration. */
