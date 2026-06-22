@@ -31,10 +31,10 @@ function TitleWithHighlight({
  */
 export function Bottleneck() {
   return (
-    <section id="bottleneck" className="w-full px-6 sm:px-[60px]">
+    <section id="bottleneck" className="w-full overflow-x-clip px-6 sm:px-[60px]">
       <div className="mx-auto flex max-w-[1320px] flex-col border-l border-hairline lg:flex-row">
         {/* Left: heading (top) + problem rows (bottom), padded blueprint column */}
-        <div className="flex flex-1 flex-col gap-12 px-6 py-16 sm:px-14 lg:min-h-[55rem] lg:justify-between lg:py-[7.5rem] lg:pr-14">
+        <div className="flex flex-1 flex-col gap-12 px-6 py-16 sm:px-14 lg:min-h-svh lg:justify-between lg:py-[7.5rem] lg:pr-14">
           <SectionHeading
             align="start"
             title={BOTTLENECK.title}
@@ -66,10 +66,14 @@ export function Bottleneck() {
           </div>
         </div>
 
-        {/* Right: full-height comparison diagram, flush to the right edge (zero right padding) */}
+        {/* Right: full-height comparison diagram. The negative right margin breaks
+            it out of the centered max-w-[1320px] column so it bleeds to the
+            viewport's right edge (the left column stays on the blueprint grid).
+            Gap to the edge is the 60px gutter up to 1440px, then the growing
+            centering margin (50vw − 660px) beyond it — min() picks the right one. */}
         <BottleneckDiagram
           bars={BOTTLENECK.bars}
-          className="lg:w-[43.375rem] lg:shrink-0"
+          className="lg:w-[43.375rem] lg:shrink-0 lg:mr-[min(-60px,calc(660px_-_50vw))]"
         />
       </div>
     </section>

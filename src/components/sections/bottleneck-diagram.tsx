@@ -163,7 +163,13 @@ export function BottleneckDiagram({
   return (
     <motion.div
       className={cn(
-        "relative h-full min-h-[28rem] w-full overflow-hidden shadow-[0_0_12px_rgba(0,0,0,0.04)]",
+        // No `h-full` here: on lg the parent is a flex row with no explicit
+        // height (it's sized by the left column's min-h-svh). `height: 100%`
+        // would opt this item out of `align-items: stretch` and then collapse
+        // to content height, leaving a gap. Height `auto` lets flex stretch it
+        // to the full section height; the inner div's h-full resolves against
+        // that stretched height. min-h covers the mobile (flex-col) case.
+        "relative min-h-[28rem] w-full overflow-hidden shadow-[0_0_12px_rgba(0,0,0,0.04)]",
         className,
       )}
       initial="hidden"
