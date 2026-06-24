@@ -84,6 +84,12 @@ const CONCEPTS = [
     description:
       "Self-driving dispatcher — a central StarSling autopilot hub reads the suite and auto-routes shards along radial spokes to five parallel runners (radar sweep, 10× faster)",
   },
+  {
+    href: "/concepts/hero-14",
+    label: "Hero Concept 14",
+    description:
+      "Live self-driving CI race — the regular runner and Starsling fill on one sped-up clock; Starsling finishes 30% faster while the regular run keeps ticking, then forks into three parallel shards (sharp connector, @starsling-bot autonomous PRs)",
+  },
 ];
 
 export default function ConceptsPage() {
