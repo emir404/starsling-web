@@ -1,1 +1,1 @@
-export { HeroConcept11 as Hero } from "@/components/concepts/hero-11/hero-concept-11";
+export { HeroConcept14 as Hero } from "@/components/concepts/hero-14/hero-concept-14";
