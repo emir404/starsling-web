@@ -90,9 +90,10 @@ export const BEAT = {
 
 export const STEP_COUNT = 7;
 
-/** Per-beat hold durations (ms) for the auto-advance. ≈12.8s/loop. */
+/** Per-beat hold durations (ms) for the auto-advance. ≈13.5s/loop. The forkDraw
+ * beat is long enough for the three connectors to trace in one by one. */
 export const BEAT_MS: readonly number[] = [
-  2600, 1700, 1300, 1100, 1400, 3000, 1700,
+  2600, 1700, 1300, 1100, 2100, 3000, 1700,
 ];
 
 /** Wall-clock targets (sec) the race clock eases to on beats raceRun/badge/aHold.
@@ -107,6 +108,49 @@ export const SHARD_RUN_MAX = Math.max(...SHARD_TOTALS);
 export function sceneOf(beat: number): "A" | "B" {
   return beat < BEAT.shift ? "A" : "B";
 }
+
+/* ----------------------------------------------------------- choreography */
+
+/**
+ * One-time mount entrance for the diagram — a staggered blur-in that picks up
+ * where the headline/form entrance (`HeroTextGroup`) leaves off, so the whole
+ * hero reads as a single timeline. All entrance timing lives here so it stays
+ * tunable in one place; `EASE` (shared/motion) is the easing language.
+ */
+export const ENTRANCE = {
+  /** Lead-in before the first node lands — overlaps the text band's settle. */
+  leadIn: 0.45,
+  /** Gap between consecutive nodes (matches HeroTextGroup's cadence). */
+  stagger: 0.09,
+  /** Per-node settle. */
+  duration: 0.6,
+  /** Blur-in keyframe each Scene-A node starts from (reduced motion → opacity). */
+  from: { opacity: 0, y: 16, scale: 0.98, filter: "blur(8px)" } as Record<
+    string,
+    number | string
+  >,
+};
+
+/** Reading-order slot (0-based) → absolute mount-entrance delay (sec). */
+export const enterDelay = (slot: number): number =>
+  ENTRANCE.leadIn + slot * ENTRANCE.stagger;
+
+/** Scene-B shard reveal delay — single source shared with the stage. */
+export const shardEnterDelay = (i: number): number => 0.1 + i * 0.08;
+
+/** Fork connector cascade — the three branches trace to their shards ONE BY ONE
+ * (each begins ~as the previous connects), once the shards have landed. */
+export const FORK = {
+  /** First branch begins — after the top shard has settled (~0.6s). */
+  start: 0.65,
+  /** Gap between consecutive branches — wide enough to read as sequential. */
+  step: 0.42,
+  /** How long each branch takes to trace from the source to its shard. */
+  drawDur: 0.4,
+};
+
+/** Fork branch i's start delay — staggered so the lines connect one by one. */
+export const forkFlowDelay = (i: number): number => FORK.start + i * FORK.step;
 
 /* ----------------------------------------------------------------- geometry */
 
@@ -169,11 +213,13 @@ export function edgePath(s: Point, t: Point): string {
   return `M ${s.x} ${s.y} L ${midX} ${s.y} L ${midX} ${t.y} L ${t.x} ${t.y}`;
 }
 
-/** Fork: the new card's right port → each shard's left port (Scene-B positions). */
+/** Fork: the new card's right port → each shard's left port (Scene-B positions).
+ * `flowDelay` (see `forkFlowDelay`) holds each branch until its target shard has
+ * landed, so the line traces into a node that is already on screen. */
 export const FORK_EDGES: readonly EdgeSpec[] = SHARDS.map((shard, i) => ({
   id: `fork-${i}`,
   d: edgePath(outPort(NEW_CARD_B), inPort(shard)),
-  flowDelay: i * 0.06,
+  flowDelay: forkFlowDelay(i),
 }));
 
 /* --------------------------------------------------------------------- copy */

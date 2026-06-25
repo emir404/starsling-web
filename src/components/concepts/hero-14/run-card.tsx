@@ -74,8 +74,11 @@ export function RunCard({
       >
         {typeof progress === "number" ? (
           <div
-            className="absolute inset-y-0 left-0"
-            style={{ width: `${clamp01(progress) * 100}%`, background: fillColor }}
+            className="absolute inset-0 origin-left"
+            style={{
+              transform: `scaleX(${clamp01(progress)})`,
+              background: fillColor,
+            }}
           />
         ) : (
           <LiveFill progress={progress} color={fillColor} />
@@ -88,7 +91,8 @@ export function RunCard({
   );
 }
 
-/** Bar fill bound to a 0–1 progress motion value (no React re-render per frame). */
+/** Bar fill bound to a 0–1 progress motion value (no React re-render per frame).
+ * Driven via `scaleX` from the left edge so it stays on the compositor. */
 function LiveFill({
   progress,
   color,
@@ -96,11 +100,11 @@ function LiveFill({
   progress: MotionValue<number>;
   color: string;
 }) {
-  const width = useTransform(progress, (p) => `${clamp01(p) * 100}%`);
+  const scaleX = useTransform(progress, (p) => clamp01(p));
   return (
     <motion.div
-      className="absolute inset-y-0 left-0"
-      style={{ width, background: color }}
+      className="absolute inset-0 origin-left"
+      style={{ scaleX, background: color }}
     />
   );
 }

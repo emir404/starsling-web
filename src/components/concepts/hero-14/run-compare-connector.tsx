@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 
 import { appearT, HIDE_T } from "@/components/concepts/shared/motion";
-import { CANVAS, COLOR, type EdgeSpec } from "./run-compare-data";
+import { CANVAS, COLOR, FORK, type EdgeSpec } from "./run-compare-data";
 
 /**
  * The 1 → 3 fork connector layer (Figma 342:1482). For each branch a faint rail
@@ -41,7 +41,7 @@ export function ForkConnectors({
             strokeWidth={1.5}
             strokeLinecap="round"
             animate={{ pathLength: active ? 1 : 0, opacity: active ? 1 : 0 }}
-            transition={active ? appearT(reduce, e.flowDelay, 0.5) : HIDE_T}
+            transition={active ? appearT(reduce, e.flowDelay, FORK.drawDur) : HIDE_T}
           />
           {/* cyan overlay — lights as the branch connects */}
           <motion.path
@@ -51,7 +51,7 @@ export function ForkConnectors({
             strokeWidth={2}
             strokeLinecap="round"
             animate={{ pathLength: active ? 1 : 0, opacity: active ? 1 : 0 }}
-            transition={active ? appearT(reduce, e.flowDelay, 0.6) : HIDE_T}
+            transition={active ? appearT(reduce, e.flowDelay, FORK.drawDur) : HIDE_T}
           />
           {/* traveling pulse — only while the branches animate */}
           {!reduce && pulse && (

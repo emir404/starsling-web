@@ -16,7 +16,7 @@ import { Hourglass } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { EASE, appearT, HIDE_T } from "@/components/concepts/shared/motion";
-import { Reveal } from "@/components/concepts/shared/reveal";
+import { Reveal, type RevealEnter } from "@/components/concepts/shared/reveal";
 import { useStepCycle } from "@/components/concepts/shared/use-step-cycle";
 import { RunCard } from "./run-card";
 import { ForkConnectors } from "./run-compare-connector";
@@ -27,6 +27,7 @@ import {
   BOT_TEXT,
   CANVAS,
   COLOR,
+  ENTRANCE,
   FOOTER,
   FORK_EDGES,
   NEW_CARD_A,
@@ -49,8 +50,10 @@ import {
   STEP_COUNT,
   TOP_SLOT,
   WHY_TEXT,
+  enterDelay,
   fmtRunTime,
   sceneOf,
+  shardEnterDelay,
   type Rect,
 } from "./run-compare-data";
 
@@ -82,6 +85,7 @@ function rectStyle(r: Rect): CSSProperties {
  */
 export function RunCompareStage({ className }: { className?: string }) {
   const stageRef = useRef<HTMLDivElement>(null);
+  const firstRace = useRef(true);
   const [box, setBox] = useState({ w: 0, h: 0 });
   const reduce = useReducedMotion();
   const reduceBool = !!reduce;
@@ -117,8 +121,13 @@ export function RunCompareStage({ className }: { className?: string }) {
     }
     if (scene !== "A") return; // frozen during Scene B; resets next loop
     if (beat === BEAT.raceRun) elapsedA.set(0);
+    // On the very first load, hold the clock until the cards have entered so the
+    // bars visibly start filling on settled cards; later loops start at once.
+    const lead = beat === BEAT.raceRun && firstRace.current ? enterDelay(1) : 0;
+    if (beat === BEAT.raceRun) firstRace.current = false;
     const controls = animate(elapsedA, RACE_ELAPSED[beat], {
-      duration: BEAT_MS[beat] / 1000,
+      duration: Math.max(0.1, BEAT_MS[beat] / 1000 - lead),
+      delay: lead,
       ease: "linear",
     });
     return () => controls.stop();
@@ -160,12 +169,9 @@ export function RunCompareStage({ className }: { className?: string }) {
     <div ref={stageRef} className={cn("relative", className)}>
       {/* ---------- desktop: contain-scaled CANVAS plane ---------- */}
       <div className="absolute inset-0 hidden overflow-hidden lg:block">
-        <motion.div
-          className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: reduce ? 0 : 0.25 }}
-        >
+        {/* the plane itself doesn't fade — each node carries its own staggered
+            blur-in entrance (see ENTRANCE), so the diagram assembles on load */}
+        <div className="absolute inset-0">
           <div
             className="absolute top-1/2 left-1/2"
             style={{
@@ -213,6 +219,11 @@ export function RunCompareStage({ className }: { className?: string }) {
               delay={0.05}
               reduce={reduceBool}
               hidden={NODE_HIDDEN}
+              enter={{
+                from: ENTRANCE.from,
+                delay: enterDelay(0),
+                duration: ENTRANCE.duration,
+              }}
               style={rectStyle(OLD_CARD)}
             >
               <RunCard
@@ -224,25 +235,38 @@ export function RunCompareStage({ className }: { className?: string }) {
               />
             </Reveal>
 
-            {/* shared Starsling card — persists, slides Scene-A → Scene-B */}
+            {/* shared Starsling card — persists, slides Scene-A → Scene-B. The
+                outer node owns the slide (x/y transform, not left/top); the
+                inner OneShotEnter owns the one-time mount blur-in. */}
             <motion.div
               className="absolute"
-              style={{ width: NEW_CARD_A.w, height: NEW_CARD_A.h }}
+              style={{
+                left: NEW_CARD_A.x,
+                top: NEW_CARD_A.y,
+                width: NEW_CARD_A.w,
+                height: NEW_CARD_A.h,
+              }}
               initial={false}
               animate={{
-                left: scene === "A" ? NEW_CARD_A.x : NEW_CARD_B.x,
-                top: scene === "A" ? NEW_CARD_A.y : NEW_CARD_B.y,
+                x: scene === "A" ? 0 : NEW_CARD_B.x - NEW_CARD_A.x,
+                y: scene === "A" ? 0 : NEW_CARD_B.y - NEW_CARD_A.y,
               }}
               transition={{ duration: reduce ? 0 : 0.6, ease: EASE }}
             >
-              <RunCard
-                topTabs={NEW_TABS}
-                runsOn={RUNS_ON_NEW}
-                runsOnTone="cyan"
-                progress={scene === "A" ? newProgressA : 1}
-                fillTone="cyan"
-                ports={scene === "B" ? { right: true } : undefined}
-              />
+              <OneShotEnter
+                delay={enterDelay(1)}
+                reduce={reduceBool}
+                className="size-full"
+              >
+                <RunCard
+                  topTabs={NEW_TABS}
+                  runsOn={RUNS_ON_NEW}
+                  runsOnTone="cyan"
+                  progress={scene === "A" ? newProgressA : 1}
+                  fillTone="cyan"
+                  ports={scene === "B" ? { right: true } : undefined}
+                />
+              </OneShotEnter>
             </motion.div>
 
             {/* Scene B — three shard cards (live) */}
@@ -253,7 +277,7 @@ export function RunCompareStage({ className }: { className?: string }) {
                 total={SHARD_TOTALS[i]}
                 index={i}
                 shown={scene === "B" && beat >= BEAT.forkDraw}
-                delay={0.1 + i * 0.08}
+                delay={shardEnterDelay(i)}
                 reduce={reduceBool}
                 rect={shard}
               />
@@ -266,6 +290,11 @@ export function RunCompareStage({ className }: { className?: string }) {
               shown={scene === "A"}
               delay={0.05}
               reduce={reduceBool}
+              enter={{
+                from: ENTRANCE.from,
+                delay: enterDelay(2),
+                duration: ENTRANCE.duration,
+              }}
             >
               <LiveTimer clock={elapsedA} total={OLD_TOTAL} />
             </CenterReveal>
@@ -275,6 +304,11 @@ export function RunCompareStage({ className }: { className?: string }) {
               shown={scene === "A"}
               delay={0.08}
               reduce={reduceBool}
+              enter={{
+                from: ENTRANCE.from,
+                delay: enterDelay(3),
+                duration: ENTRANCE.duration,
+              }}
             >
               <LiveTimer clock={elapsedA} total={NEW_TOTAL} />
             </CenterReveal>
@@ -313,7 +347,7 @@ export function RunCompareStage({ className }: { className?: string }) {
               <BotFooter />
             </CenterReveal>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* ---------- mobile: stacked recap (legible; may scroll) ---------- */}
@@ -375,6 +409,7 @@ function CenterReveal({
   shown,
   delay,
   reduce,
+  enter,
   children,
 }: {
   cx: number;
@@ -383,8 +418,13 @@ function CenterReveal({
   shown: boolean;
   delay: number;
   reduce: boolean;
+  enter?: RevealEnter;
   children: ReactNode;
 }) {
+  // One-shot mount entrance (see Reveal): the outer div owns the static
+  // centering transform; the inner motion node owns the entrance/beat motion.
+  const [entered, setEntered] = useState(false);
+  const entering = !!enter && !entered && shown;
   const centered = cy !== undefined;
   return (
     <div
@@ -396,13 +436,50 @@ function CenterReveal({
       }}
     >
       <motion.div
-        initial={false}
+        initial={enter ? (reduce ? { opacity: 0 } : enter.from) : false}
         animate={shown ? NODE_VISIBLE : reduce ? { opacity: 0 } : NODE_HIDDEN}
-        transition={shown ? appearT(reduce, delay) : HIDE_T}
+        transition={
+          shown
+            ? entering
+              ? appearT(reduce, enter!.delay, enter!.duration)
+              : appearT(reduce, delay)
+            : HIDE_T
+        }
+        onAnimationComplete={() => {
+          if (entering) setEntered(true);
+        }}
       >
         {children}
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * Inner wrapper that plays the one-time mount blur-in, then stays put. Used to
+ * compose an entrance onto a node that already owns an *outer* transform (the
+ * Starsling card's A→B slide), so the entrance and the slide never fight.
+ */
+function OneShotEnter({
+  delay,
+  reduce,
+  className,
+  children,
+}: {
+  delay: number;
+  reduce: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={reduce ? { opacity: 0 } : ENTRANCE.from}
+      animate={NODE_VISIBLE}
+      transition={appearT(reduce, delay, ENTRANCE.duration)}
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -614,7 +691,7 @@ function MobileCard({
   const accent = tone === "amber" ? COLOR.amberValue : COLOR.cyanAccent;
   const value = tone === "amber" ? COLOR.amberValue : COLOR.cyanValue;
   const fill = tone === "amber" ? COLOR.amberFill : COLOR.cyanFill;
-  const pct = Math.max(0, Math.min(1, progress)) * 100;
+  const fillScale = Math.max(0, Math.min(1, progress));
 
   return (
     <div className="w-full px-4 py-3.5" style={{ background: COLOR.node }}>
@@ -649,7 +726,10 @@ function MobileCard({
         className="mt-3 h-2.5 w-full overflow-hidden"
         style={{ background: COLOR.barTrack }}
       >
-        <div className="h-full" style={{ width: `${pct}%`, background: fill }} />
+        <div
+          className="h-full w-full origin-left"
+          style={{ transform: `scaleX(${fillScale})`, background: fill }}
+        />
       </div>
     </div>
   );
