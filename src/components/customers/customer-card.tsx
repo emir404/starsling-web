@@ -10,7 +10,7 @@ export function CustomerCard({ customer }: { customer: Customer }) {
   return (
     <Link
       href={`/customers/${customer.slug}`}
-      className="group flex flex-col gap-7 border border-hairline p-6 transition-colors hover:bg-band sm:p-8"
+      className="group flex flex-col gap-7 p-6 transition-colors hover:bg-band sm:p-8"
     >
       <div className="flex items-center justify-between gap-4">
         <CustomerWordmark customer={customer} />

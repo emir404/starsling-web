@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-import { BlueprintStrip } from "@/components/shared/blueprint-strip";
 import { Eyebrow } from "@/components/shared/eyebrow";
 import { VideoPlayer } from "@/components/sections/video-player";
 import { buttonVariants } from "@/components/ui/button";
@@ -57,7 +56,7 @@ export function BlogPostView({ post }: { post: BlogPost }) {
 
   return (
     <article className="w-full px-6 sm:px-[60px]">
-      <div className="mx-auto w-full max-w-[1320px] border-x border-t border-hairline px-6 py-12 sm:px-14 sm:py-16">
+      <div className="mx-auto w-full max-w-[1320px] border-x border-y border-hairline px-6 py-12 sm:px-14 sm:py-16">
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.04em] text-foreground/55 uppercase transition-colors hover:text-foreground"
@@ -97,13 +96,8 @@ export function BlogPostView({ post }: { post: BlogPost }) {
               <BlogBody blocks={post.body} />
             </div>
 
-            {/* motif divider (Figma 102:112, teal on light) + share + CTA */}
-            <div
-              aria-hidden
-              className="mt-14 mb-10 flex justify-center overflow-hidden text-[#334d52]/60"
-            >
-              <BlueprintStrip count={4} />
-            </div>
+            {/* divider + share + CTA */}
+            <div aria-hidden className="mt-14 mb-10 border-t border-hairline" />
 
             <div className="flex flex-col gap-6">
               <div className="flex flex-wrap items-center gap-3">

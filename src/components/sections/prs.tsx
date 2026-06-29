@@ -7,7 +7,10 @@ import { PrFeed } from "./pr-feed";
  * "The PRs don't stop coming." (Figma 234:468) — a dark teal band where PR
  * cards stream in and stack, framing the volume problem AI agents create. The
  * whole section keeps the same fixed colors in light and dark mode, so it uses
- * literal values / white-alpha rather than theme tokens; it reuses the shared
+ * literal values / white-alpha rather than theme tokens — except the outer
+ * `border-y` seam, which uses the themed `band-border` so it blends with the page
+ * in both modes instead of flaring into a bright line on the dark page. It reuses
+ * the shared
  * <Section> only for the blueprint frame geometry, with the rail colors
  * overridden to the band's palette.
  */
@@ -16,7 +19,7 @@ export function Prs() {
   return (
     <Section
       id="prs"
-      className="border-y border-[#eff4f4] bg-[#072227]"
+      className="border-y border-band-border bg-[#072227]"
       containerClassName="border-t border-[#164c4c] py-24 sm:py-40"
     >
       <div className="mx-auto flex w-full max-w-[49.625rem] flex-col items-center">

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import { Eyebrow } from "@/components/shared/eyebrow";
-import { RingConstellation } from "@/components/shared/ring-constellation";
 import { formatPostDate } from "@/content/blog";
 import type { BlogPost } from "@/types/blog";
 
@@ -18,11 +17,11 @@ export function BlogPostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group block border border-hairline transition-colors hover:bg-band"
+      className="group block transition-colors hover:bg-band"
     >
       <div className="grid gap-5 p-4 sm:grid-cols-[300px_1fr] sm:gap-7 sm:p-5">
-        {/* thumbnail */}
-        <div className="relative aspect-video overflow-hidden border border-hairline bg-panel">
+        {/* thumbnail (clean band placeholder when a post has no hero media) */}
+        <div className="relative aspect-video overflow-hidden border border-hairline">
           {src ? (
             // eslint-disable-next-line @next/next/no-img-element -- static poster/thumb
             <img
@@ -31,10 +30,11 @@ export function BlogPostCard({ post }: { post: BlogPost }) {
               className="absolute inset-0 size-full object-cover"
             />
           ) : (
-            <RingConstellation
-              preset="b"
-              className="absolute inset-0 size-full text-white/12"
-            />
+            <div className="flex size-full items-center justify-center bg-band">
+              <span className="font-heading text-lg font-medium tracking-tight text-foreground/25">
+                Starsling
+              </span>
+            </div>
           )}
         </div>
 

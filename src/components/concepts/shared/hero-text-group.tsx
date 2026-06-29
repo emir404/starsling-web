@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion, useReducedMotion, type Variants } from "motion/react";
 
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { HERO_CONTENT } from "@/content/hero";
 import type { HeroContent } from "@/types/content";
 import { EASE } from "@/components/concepts/shared/motion";
+import { useWaitlist } from "@/hooks/use-waitlist";
 
 /**
  * Hero text group, shared by every hero concept (Figma 196:3205 / 196:3213 / 196:3218).
@@ -23,8 +24,9 @@ export function HeroTextGroup({
   content?: HeroContent;
   className?: string;
 }) {
-  const router = useRouter();
   const reduce = useReducedMotion();
+  const { status, error, submit } = useWaitlist();
+  const [email, setEmail] = useState("");
 
   const container: Variants = {
     hidden: {},
@@ -77,25 +79,47 @@ export function HeroTextGroup({
         >
           {content.description}
         </motion.p>
-        <motion.form
-          variants={fadeUp}
-          className="mt-6 flex w-full gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            router.push(content.form.href);
-          }}
-        >
-          <Input
-            type="email"
-            name="email"
-            aria-label="Email address"
-            placeholder={content.form.placeholder}
-            className="flex-1 dark:bg-white/10"
-          />
-          <Button type="submit" className="px-4 text-base">
-            {content.form.cta}
-          </Button>
-        </motion.form>
+        {status === "success" ? (
+          <motion.p
+            variants={fadeUp}
+            className="mt-6 flex w-full items-center gap-2.5 font-mono text-sm uppercase tracking-[0.02em] text-foreground"
+          >
+            <span aria-hidden className="size-3 shrink-0 bg-brand" />
+            You’re on the list — we’ll be in touch.
+          </motion.p>
+        ) : (
+          <motion.form
+            variants={fadeUp}
+            className="mt-6 w-full"
+            onSubmit={(event) => {
+              event.preventDefault();
+              submit(email);
+            }}
+          >
+            <div className="flex w-full gap-2">
+              <Input
+                type="email"
+                name="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                aria-label="Email address"
+                aria-invalid={status === "error" || undefined}
+                disabled={status === "submitting"}
+                placeholder={content.form.placeholder}
+                className="flex-1 dark:bg-white/10"
+              />
+              <Button type="submit" disabled={status === "submitting"} className="px-4 text-base">
+                {status === "submitting" ? "Joining…" : content.form.cta}
+              </Button>
+            </div>
+            {status === "error" ? (
+              <p role="alert" className="mt-2 font-mono text-xs text-destructive">
+                {error}
+              </p>
+            ) : null}
+          </motion.form>
+        )}
       </div>
     </motion.div>
   );

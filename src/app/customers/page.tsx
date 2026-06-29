@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Customers",
   description:
     "Teams that have upgraded to self-driving CI — case studies from Better Auth, Mastra, and Partcl.",
+  alternates: { canonical: "/customers" },
 };
 
 export default function CustomersPage() {

@@ -8,7 +8,9 @@ import type { DiffLine } from "@/types/content";
  * "Install with a one-line change" (Figma 234:1021) — a dark teal band whose
  * colors stay fixed across light and dark mode, so (like the PRs section) it
  * reuses the shared <Section> only for the blueprint frame geometry, with
- * literal values rather than theme tokens. A faint schematic strip of radar
+ * literal values rather than theme tokens — except the outer `border-y` seam,
+ * which uses the themed `band-border` so it blends with the page in both modes
+ * instead of flaring into a bright line on the dark page. A faint schematic strip of radar
  * pings linked by line groups sits behind a centered heading and the
  * runner-swap diff card.
  */
@@ -17,7 +19,7 @@ export function Installation() {
   return (
     <Section
       id="installation"
-      className="border-y border-[#eff4f4] bg-[#072227]"
+      className="border-y border-band-border bg-[#072227]"
       containerClassName="relative overflow-hidden border-t border-[#164c4c] py-24 sm:py-40"
     >
       <div

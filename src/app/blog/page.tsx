@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "News, deep dives, and product updates from the Starsling team — making CI self-driving.",
+  alternates: { canonical: "/blog" },
 };
 
 export default function BlogPage() {

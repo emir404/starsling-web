@@ -26,8 +26,8 @@ export function MobileNav() {
         render={
           <Button
             variant="ghost"
-            size="icon-sm"
-            className="md:hidden"
+            size="icon"
+            className="lg:hidden"
             aria-label="Open menu"
           />
         }
@@ -44,7 +44,7 @@ export function MobileNav() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="flex min-h-11 items-center px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               {link.label}
             </Link>

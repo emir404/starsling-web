@@ -16,7 +16,7 @@ export function MergedPrs() {
   return (
     <Section
       id="merged-prs"
-      containerClassName="relative overflow-hidden border-b border-hairline py-20 sm:py-[120px]"
+      containerClassName="relative overflow-hidden py-20 sm:py-[120px]"
     >
       <SectionHeading align="start" title={title} subtitle={subtitle} />
 

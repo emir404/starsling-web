@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { BlueprintColumn } from "@/components/shared/blueprint-strip";
 import { Eyebrow } from "@/components/shared/eyebrow";
 import type { Customer } from "@/types/customers";
 import { CustomerCard } from "./customer-card";
@@ -9,18 +8,10 @@ import { CustomerWordmark } from "./customer-bits";
 export function CustomersIndex({ customers }: { customers: Customer[] }) {
   return (
     <div className="w-full px-6 sm:px-[60px]">
-      <div className="relative mx-auto w-full max-w-[1320px] overflow-hidden border-x border-t border-hairline px-6 py-16 sm:px-14 sm:py-24">
-        {/* faint motif side rails (Figma 102:11, teal on light) */}
-        <BlueprintColumn
-          count={5}
-          className="pointer-events-none absolute top-20 left-3 hidden text-[#334d52]/60 lg:flex"
-        />
-        <BlueprintColumn
-          count={5}
-          className="pointer-events-none absolute top-20 right-3 hidden text-[#334d52]/60 lg:flex"
-        />
-
-        <header className="relative mx-auto max-w-3xl text-center">
+      {/* No top border: the SocialProof band above already closes with a
+          border-b, so the seam stays a single 1.5px hairline. */}
+      <div className="mx-auto w-full max-w-[1320px] border-x border-hairline px-6 py-16 sm:px-14 sm:py-24">
+        <header className="mx-auto max-w-3xl text-center">
           <Eyebrow>Customers</Eyebrow>
           <h1 className="mt-4 font-heading text-[2.5rem] leading-[1.05] font-medium tracking-[-0.03em] text-balance sm:text-[3.25rem]">
             Teams that have upgraded to self-driving CI
@@ -31,8 +22,9 @@ export function CustomersIndex({ customers }: { customers: Customer[] }) {
           </p>
         </header>
 
-        {/* featured headline metrics */}
-        <div className="relative mt-12 grid gap-px overflow-hidden border border-hairline bg-hairline sm:grid-cols-3">
+        {/* Featured headline metrics — one connected hairline grid (gap-px over a
+            hairline ground draws the internal rules). */}
+        <div className="mt-14 grid gap-px overflow-hidden border border-hairline bg-hairline sm:grid-cols-3">
           {customers.map((c) => (
             <Link
               key={c.slug}
@@ -50,8 +42,9 @@ export function CustomersIndex({ customers }: { customers: Customer[] }) {
           ))}
         </div>
 
-        {/* case-study cards */}
-        <div className="relative mt-6 flex flex-col gap-6">
+        {/* Case-study cards — a single bordered stack with hairline dividers so the
+            rows read as a connected blueprint grid (not floating cards). */}
+        <div className="mt-6 divide-y divide-hairline border border-hairline">
           {customers.map((c) => (
             <CustomerCard key={c.slug} customer={c} />
           ))}

@@ -9,7 +9,7 @@ const isExternal = (href: string) => href.startsWith("http");
 
 /** Shared tile recipe for footer links (mirrors the header nav pills). */
 const tileClass =
-  "flex items-center bg-[#30a6bb]/15 px-4 py-3 font-mono text-base font-medium uppercase whitespace-nowrap text-white/80 transition-colors hover:bg-[#30a6bb]/25 hover:text-white";
+  "flex items-center bg-[#30a6bb]/15 px-4 py-3 font-mono text-base font-medium uppercase whitespace-nowrap text-white/80 transition-colors hover:bg-[#30a6bb]/25 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#30a6bb] focus-visible:ring-inset";
 
 /**
  * Global footer (Figma 234:1281): a fixed dark-teal "island" — identical in
@@ -32,7 +32,7 @@ export function SiteFooter() {
               alt={SITE_CONFIG.name}
               width={302}
               height={64}
-              className="h-12 w-auto invert sm:h-16"
+              className="h-12 w-auto self-start invert sm:h-16"
             />
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-3 bg-[#30a6bb]/10 px-3.5 py-2.5">

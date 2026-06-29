@@ -7,7 +7,7 @@ export const HERO_CONTENT: HeroContent = {
   headline: SITE_CONFIG.tagline,
   description: "GitHub Actions runners with AI agents that 5x your build speeds",
   form: {
-    placeholder: "emir@witharc.co",
+    placeholder: "you@company.com",
     cta: "Join Waitlist",
     href: SITE_CONFIG.links.waitlist,
   },

@@ -12,10 +12,8 @@ export const CUSTOMER_LOGOS: CustomerLogo[] = [
 ];
 
 // Per-person attribution, spread into each quote below to avoid repetition.
-// NOTE (assets): Bereket's avatar isn't in the repo yet — drop the file at
-// /avatars/bereket-engida.png. /avatars/testimonial-2.png is a placeholder for
-// Vamshi; replace with his real photo if that isn't him. Partcl has no wordmark
-// SVG, so the card renders "Partcl" as text (add /logos/partcl.svg to upgrade).
+// NOTE (assets): Partcl has no wordmark SVG, so the card renders "Partcl" as
+// text (add /logos/partcl.svg to upgrade).
 const ABHI = {
   author: "Abhi Aiyer",
   role: "Co-founder & CTO, Mastra",
@@ -28,7 +26,7 @@ const VAMSHI = {
   author: "Vamshi Balanaga",
   role: "Co-founder & CTO, Partcl",
   company: "Partcl",
-  avatarSrc: "/avatars/testimonial-2.png",
+  avatarSrc: "/avatars/vamshi-balanaga.png",
 } satisfies Omit<Testimonial, "quote">;
 
 const BEREKET = {

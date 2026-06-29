@@ -35,7 +35,7 @@ export function CaseStudyView({
 
   return (
     <article className="w-full px-6 sm:px-[60px]">
-      <div className="mx-auto w-full max-w-[1320px] border-x border-t border-hairline px-6 py-12 sm:px-14 sm:py-16">
+      <div className="mx-auto w-full max-w-[1320px] border-x border-y border-hairline px-6 py-12 sm:px-14 sm:py-16">
         <Link
           href="/customers"
           className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.04em] text-foreground/55 uppercase transition-colors hover:text-foreground"

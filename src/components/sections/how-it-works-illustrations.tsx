@@ -8,11 +8,15 @@ import { HOW_IT_WORKS } from "@/content/how-it-works";
 
 /**
  * The three animated illustrations for the "How it works" section (Figma
- * 282:135 / 286:2304 / 286:2386). Each renders at its exact Figma size and is
- * centered by the parent stage; the parent remounts it when its step becomes
- * active, so each mockup replays its entrance via `initial="hidden"
- * animate="show"`. Cards are translucent white on the teal stage (with `dark:`
- * skins) and all choreography honors reduced motion.
+ * 282:135 / 286:2304 / 286:2386). Each card ships in two layouts behind a
+ * `variant` prop:
+ *   • "desktop" (default) — the exact Figma mockup at its native pixel size,
+ *     centered + scaled to fit the stage by the parent. Reused as-is by
+ *     `cta-editor-stage.tsx`, which depends on `EditorCard` being 950px wide.
+ *   • "mobile" — a fluid, `w-full` reflow that fills the phone width at legible
+ *     type instead of being scaled down to ~27% (the old behavior). Both layouts
+ *     share the same content, motion factories, choreography delays, and
+ *     reduced-motion branches, so the story and timing are identical at any size.
  */
 
 /** Shared easing — the same curve the concept animations and site header use. */
@@ -99,6 +103,10 @@ const BAR = "border-black/5 bg-white dark:border-white/5 dark:bg-[#384343]";
 /** Root motion wrapper so each mockup replays its choreography when it mounts. */
 const ROOT = { hidden: {}, show: {} } as const;
 
+/** Which layout a card renders — desktop keeps the native Figma size. */
+type CardVariant = "desktop" | "mobile";
+type CardProps = { variant?: CardVariant };
+
 /* ------------------------------- Step 1 -------------------------------- */
 
 type CodeRow = {
@@ -109,8 +117,10 @@ type CodeRow = {
   seg: { t: string; kw?: boolean }[];
 };
 
+type EditorProps = { reduce: boolean; filename: string; rows: CodeRow[] };
+
 /** Code-editor mockup whose line 7 swaps ubuntu-latest → starsling-ubuntu. */
-export function EditorCard() {
+export function EditorCard({ variant = "desktop" }: CardProps) {
   const reduce = !!useReducedMotion();
   const { filename, swapFrom, swapTo } = HOW_IT_WORKS.install;
 
@@ -131,6 +141,15 @@ export function EditorCard() {
     { n: "13", seg: [] },
   ];
 
+  return variant === "mobile" ? (
+    <EditorMobile reduce={reduce} filename={filename} rows={rows} />
+  ) : (
+    <EditorDesktop reduce={reduce} filename={filename} rows={rows} />
+  );
+}
+
+/** Native Figma size (950×360). Unchanged — `cta-editor-stage.tsx` depends on it. */
+function EditorDesktop({ reduce, filename, rows }: EditorProps) {
   return (
     <motion.div
       initial="hidden"
@@ -208,6 +227,92 @@ export function EditorCard() {
   );
 }
 
+/** Fluid reflow: the same editor as a `w-full` card with normal-flow code rows. */
+function EditorMobile({ reduce, filename, rows }: EditorProps) {
+  return (
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={ROOT}
+      className={cn("relative w-full overflow-hidden", CARD)}
+    >
+      {/* title bar */}
+      <div className={cn("flex h-11 items-center border-b px-3", BAR)}>
+        <span className="size-2 rounded-full bg-foreground/20" />
+        <span className="ml-2 size-2 rounded-full bg-foreground/20" />
+        <span className="ml-2 size-2 rounded-full bg-foreground/20" />
+        <span className="ml-3 truncate font-mono text-xs text-foreground">{filename}</span>
+      </div>
+
+      {/* code — rows reflow; the rm/add rows carry their own swap highlight */}
+      <div className="overflow-x-auto py-3 font-mono text-xs leading-[1.7] whitespace-pre [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {rows.map((row, i) => {
+          const isAdd = row.tone === "add";
+          const isRm = row.tone === "rm";
+          return (
+            <div key={i} className="relative flex h-[1.7em] items-center px-3">
+              {isRm && (
+                <motion.span
+                  aria-hidden
+                  variants={wipeX(reduce, 0.4)}
+                  className="absolute inset-0 bg-[rgba(239,68,68,0.15)]"
+                />
+              )}
+              {isAdd && (
+                <motion.span
+                  aria-hidden
+                  variants={wipeX(reduce, 0.6)}
+                  className="absolute inset-0 bg-[rgba(12,144,166,0.15)] dark:bg-[rgba(22,199,228,0.15)]"
+                />
+              )}
+              <span
+                className={cn(
+                  "relative w-6 shrink-0",
+                  isRm
+                    ? "text-[#dc2626] dark:text-[#ed9696]"
+                    : isAdd
+                      ? "text-[#096d7d] dark:text-[#4fbfd1]"
+                      : "text-foreground/30",
+                )}
+              >
+                {row.n}
+              </span>
+              {isAdd ? (
+                <motion.span
+                  variants={wipeX(reduce, 0.65)}
+                  className="relative text-[#096d7d] dark:text-[#4fbfd1]"
+                >
+                  {row.seg.map((s, j) => (
+                    <span key={j}>{s.t}</span>
+                  ))}
+                </motion.span>
+              ) : (
+                <span
+                  className={cn(
+                    "relative",
+                    isRm && "text-[#dc2626] line-through dark:text-[#ed9696]",
+                    row.comment && "text-foreground/60 dark:text-foreground",
+                    !row.tone && !row.comment && "text-foreground",
+                  )}
+                >
+                  {row.seg.map((s, j) => (
+                    <span
+                      key={j}
+                      className={s.kw ? "text-[#1070e8] dark:text-[#63a9ff]" : undefined}
+                    >
+                      {s.t}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ------------------------------- Step 2 -------------------------------- */
 
 /** Job-start coordinates within the 776×328 timeline plane (Figma 286:2635). */
@@ -223,8 +328,17 @@ const JOB_DOTS = [
 ];
 
 /** "8 jobs in parallel" timeline: dots cluster left of the 1:42 finish line. */
-export function TimelineCard() {
+export function TimelineCard({ variant = "desktop" }: CardProps) {
   const reduce = !!useReducedMotion();
+  return variant === "mobile" ? (
+    <TimelineMobile reduce={reduce} />
+  ) : (
+    <TimelineDesktop reduce={reduce} />
+  );
+}
+
+/** Native Figma size (841×360). */
+function TimelineDesktop({ reduce }: { reduce: boolean }) {
   const { jobsLabel, saved, allDone, allDoneNote, start, baseline } = HOW_IT_WORKS.speed;
 
   return (
@@ -323,11 +437,126 @@ export function TimelineCard() {
   );
 }
 
+/** Fluid reflow: the timeline plane scales to `w-full`; offsets become percentages. */
+function TimelineMobile({ reduce }: { reduce: boolean }) {
+  const { jobsLabel, saved, allDone, start, baseline } = HOW_IT_WORKS.speed;
+  /** Percent of the original 776×328 plane, so the cluster keeps its shape. */
+  const px = (v: number, total: number) => `${(v / total) * 100}%`;
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={ROOT}
+      className={cn("relative w-full overflow-hidden p-4", CARD)}
+    >
+      {/* faint blueprint grid */}
+      <div
+        aria-hidden
+        className="absolute inset-0 text-foreground/[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
+      <div className="relative h-[clamp(14rem,56vw,17rem)] w-full">
+        {/* finish line + GitHub baseline */}
+        <motion.div
+          variants={fade(reduce, 0.3)}
+          className="absolute top-[6%] bottom-[15%] w-px border-l border-dashed border-[#2cd4be]"
+          style={{ left: px(110, 776) }}
+        />
+        <motion.div
+          variants={fade(reduce, 1.1)}
+          className="absolute top-[6%] bottom-[15%] right-0 w-px border-l border-dashed border-foreground/10"
+        />
+
+        {/* labels */}
+        <motion.p
+          variants={fade(reduce, 0.1)}
+          className="absolute top-0 left-0 font-mono text-[11px] font-medium text-foreground"
+        >
+          {jobsLabel}
+        </motion.p>
+        <motion.p
+          variants={fade(reduce, 0.1)}
+          className="absolute bottom-0 left-0 font-mono text-[11px] text-foreground/80"
+        >
+          {start}
+        </motion.p>
+        <motion.p
+          variants={fade(reduce, 0.4)}
+          className="absolute bottom-0 font-mono text-[11px] text-[#2cd4be]"
+          style={{ left: px(110, 776) }}
+        >
+          {allDone}
+        </motion.p>
+        <motion.p
+          variants={fade(reduce, 1.1)}
+          className="absolute bottom-0 right-0 font-mono text-[11px] text-foreground/80"
+        >
+          {baseline}
+        </motion.p>
+
+        {/* job dots (staggered pop) */}
+        <motion.div
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+          }}
+          className="absolute inset-0"
+        >
+          {JOB_DOTS.map((d, i) => (
+            <motion.span
+              key={i}
+              variants={pop(reduce)}
+              style={{ left: px(d.l, 776), top: px(d.t, 328) }}
+              className="absolute size-2.5 rounded-full bg-[#2cd4be]"
+            />
+          ))}
+        </motion.div>
+
+        {/* the slow GitHub baseline job */}
+        <motion.span
+          variants={fade(reduce, 1.1)}
+          style={{ left: px(406, 776), top: px(276, 328) }}
+          className="absolute size-2.5 rounded-full bg-foreground/30"
+        />
+
+        {/* saved connector + badge */}
+        <motion.div
+          variants={growX(reduce, 0.9)}
+          className="absolute right-0 h-px origin-left bg-[#1f9b8b]"
+          style={{ left: px(110, 776), top: px(250, 328) }}
+        />
+        <motion.div
+          variants={pop(reduce, 1.15)}
+          className="absolute left-1/2 flex -translate-x-1/2 items-center bg-[#1f9b8b] px-2 py-1"
+          style={{ top: px(224, 328) }}
+        >
+          <span className="font-mono text-[11px] font-medium leading-none text-white">{saved}</span>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ------------------------------- Step 3 -------------------------------- */
 
 /** Agent run-log + the optimization PR it opens, shown side by side. */
-export function AgentCard() {
+export function AgentCard({ variant = "desktop" }: CardProps) {
   const reduce = !!useReducedMotion();
+  return variant === "mobile" ? (
+    <AgentMobile reduce={reduce} />
+  ) : (
+    <AgentDesktop reduce={reduce} />
+  );
+}
+
+/** Native Figma size (956 wide, two side-by-side sub-cards). */
+function AgentDesktop({ reduce }: { reduce: boolean }) {
   const { run, statusStart, exploring, steps, statusEnd, pr } = HOW_IT_WORKS.agents;
 
   return (
@@ -422,6 +651,98 @@ export function AgentCard() {
         <div
           className={cn("absolute inset-x-0 bottom-0 flex h-12 items-center gap-1 border-t px-3 font-mono text-sm", BAR)}
         >
+          <span className="text-[#096d7d] dark:text-[#3dbfae]">{pr.additions}</span>
+          <span className="text-[#dc2626] dark:text-[#ed9696]">{pr.deletions}</span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/** Fluid reflow: the run log and the PR stack vertically, each `w-full`. */
+function AgentMobile({ reduce }: { reduce: boolean }) {
+  const { run, statusStart, exploring, steps, statusEnd, pr } = HOW_IT_WORKS.agents;
+
+  return (
+    <motion.div
+      initial="hidden"
+      animate="show"
+      variants={ROOT}
+      className="flex w-full flex-col gap-4"
+    >
+      {/* Card A — the agent run log */}
+      <motion.div variants={scaleIn(reduce)} className={cn("relative w-full overflow-hidden", CARD)}>
+        <div className={cn("flex h-11 items-center gap-2 border-b px-3", BAR)}>
+          <span className="flex items-center bg-[#1f9b8b] px-2 py-1 font-mono text-[11px] font-medium leading-none text-white">
+            {run.label}
+          </span>
+          <span className="font-mono text-xs font-medium text-foreground">
+            <span className="text-foreground/50">#</span>
+            {run.ref}
+          </span>
+          <span className="ml-auto font-mono text-xs font-medium text-foreground">{run.branch}</span>
+        </div>
+
+        <div className="flex flex-col gap-2.5 px-3 py-3">
+          <motion.p variants={fade(reduce, 0.2)} className="text-xs text-foreground/80">
+            {statusStart}
+          </motion.p>
+
+          <motion.div variants={fade(reduce, 0.35)} className="flex items-center gap-2">
+            <Code2 className="size-4 shrink-0 text-foreground" aria-hidden />
+            <span className="text-xs text-foreground">{exploring}</span>
+          </motion.div>
+
+          {/* log connector + lines */}
+          <div className="relative pl-4">
+            <motion.div
+              variants={growY(reduce, 0.5)}
+              className="absolute top-1 bottom-1 left-1 w-px origin-top rounded-full bg-foreground/20"
+            />
+            <motion.div
+              variants={{
+                hidden: {},
+                show: { transition: { staggerChildren: 0.12, delayChildren: 0.55 } },
+              }}
+              className="flex flex-col gap-1 text-[11px] leading-[1.45] text-foreground/50"
+            >
+              {steps.map((s, i) => (
+                <motion.p key={i} variants={fade(reduce, 0, 6)}>
+                  {s}
+                </motion.p>
+              ))}
+            </motion.div>
+          </div>
+
+          <motion.p variants={fade(reduce, 1.2)} className="text-xs text-foreground/80">
+            {statusEnd}
+          </motion.p>
+        </div>
+      </motion.div>
+
+      {/* Card B — the opened PR (slides in last) */}
+      <motion.div variants={fade(reduce, 1.35, 16)} className={cn("relative w-full overflow-hidden", CARD)}>
+        <div className={cn("flex h-11 items-center gap-2 border-b px-3", BAR)}>
+          <span className="flex items-center bg-[rgba(31,155,139,0.1)] px-2 py-1 font-mono text-[11px] font-medium leading-none text-[#057c6d] dark:text-[#48c9b8]">
+            {pr.label}
+          </span>
+          <span className="font-mono text-xs font-medium text-foreground">
+            <span className="text-foreground/50">#</span>
+            {pr.ref}
+          </span>
+          <span className="ml-auto font-mono text-xs font-medium text-foreground">
+            <span className="text-foreground/50">by</span> {pr.by}
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-1.5 px-3 py-3">
+          <p className="text-sm font-medium text-foreground/80">
+            <span className="text-[#1f9b8b] dark:text-[#3dbfae]">{pr.type}</span> {pr.title}
+          </p>
+          <p className="text-[11px] leading-[1.5] text-foreground/50">{pr.description}</p>
+        </div>
+
+        <div className={cn("flex h-10 items-center gap-1 border-t px-3 font-mono text-xs", BAR)}>
           <span className="text-[#096d7d] dark:text-[#3dbfae]">{pr.additions}</span>
           <span className="text-[#dc2626] dark:text-[#ed9696]">{pr.deletions}</span>
         </div>

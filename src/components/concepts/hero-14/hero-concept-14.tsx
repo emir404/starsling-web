@@ -6,13 +6,14 @@ import { RunCompareStage } from "./run-compare-stage";
 
 /**
  * Panel surface — always-dark, the solid `--panel` ground (`#191f20`) shared with
- * the other dark diagram surfaces, with the fixed Figma hairline border. `--primary`
+ * the other dark diagram surfaces, with a subtle 12% white-alpha hairline border (a
+ * fixed near-white `#eff3f4` flared into a harsh bright ring over the dark page). `--primary`
  * is scoped here for the light brand teal in case the `.dark` scope needs it; the
  * CTA itself lives in the light band above.
  */
 const PANEL_STYLE = {
   background: "var(--panel)",
-  borderColor: "#eff3f4",
+  borderColor: "rgba(215, 234, 237, 0.12)",
   "--primary": "#0c90a6",
   "--primary-foreground": "#ffffff",
 } as CSSProperties;

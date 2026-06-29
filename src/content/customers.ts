@@ -158,7 +158,7 @@ const PARTCL: Customer = {
     text: "Within a day of migrating to Starsling Runners, their agents opened up a PR that literally made our Rust CI tests 2x faster!",
     author: "Vamshi Balanaga",
     role: "Co-founder & CTO, Partcl",
-    avatarSrc: "/avatars/testimonial-2.png",
+    avatarSrc: "/avatars/vamshi-balanaga.png",
   },
   metrics: [
     { value: "13×", label: "Cheaper per run", detail: "vs self-hosted" },

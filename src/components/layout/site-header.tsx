@@ -52,7 +52,7 @@ export function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="bg-brand-bright/5 px-4 py-3 font-mono text-base font-medium uppercase text-foreground/80 transition-colors hover:bg-brand-bright/10 hover:text-foreground"
+                className="bg-brand-bright/5 px-4 py-3 font-mono text-base font-medium uppercase text-foreground/80 transition-colors hover:bg-brand-bright/10 hover:text-foreground focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
               >
                 {link.shortcut ? `[${link.shortcut}] ` : ""}
                 {link.label}

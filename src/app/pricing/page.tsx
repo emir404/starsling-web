@@ -5,6 +5,7 @@ import { Cta, Faq, Pricing, Testimonials } from "@/components/sections";
 export const metadata: Metadata = {
   title: "Pricing",
   description: "Simple, usage-based pricing. Start free and pay only for what you build.",
+  alternates: { canonical: "/pricing" },
 };
 
 export default function PricingPage() {

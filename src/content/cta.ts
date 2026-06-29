@@ -7,7 +7,7 @@ export const CTA_CONTENT: CtaContent = {
   subtitle:
     "Your GitHub Actions, through the ring. 80% faster, 33% cheaper, one line to switch.",
   form: {
-    placeholder: "emir@witharc.co",
+    placeholder: "you@company.com",
     cta: "Join Waitlist",
     href: SITE_CONFIG.links.waitlist,
   },

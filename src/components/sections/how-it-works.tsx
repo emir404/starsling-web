@@ -60,7 +60,7 @@ function ScaledDiagram({ children }: { children: ReactNode }) {
   return (
     <div
       ref={wrapRef}
-      className="absolute inset-0 z-10 flex items-center justify-center"
+      className="absolute inset-0 z-10 hidden items-center justify-center lg:flex"
     >
       <div
         className="relative"
@@ -87,22 +87,35 @@ export function HowItWorks() {
   const reduce = !!useReducedMotion();
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const tablistRef = useRef<HTMLDivElement>(null);
   const inView = useInView(cardRef, { amount: 0.3 });
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
 
   const steps = [install.tab, speed.tab, agents.tab];
-  const diagrams = [
-    <EditorCard key="editor" />,
-    <TimelineCard key="timeline" />,
-    <AgentCard key="agents" />,
-  ];
+  // The same component drives both the scaled desktop stage and the fluid mobile
+  // reflow, so one `active` index stays the single source of truth for both.
+  const cards = [EditorCard, TimelineCard, AgentCard];
+  const ActiveCard = cards[active];
 
   // The timeline runs only while the card is on-screen, un-hovered, and motion is
   // allowed; otherwise it freezes — so a frozen bar never silently advances.
   const advancing = inView && !paused && !reduce;
   const goTo = (i: number) =>
     setActive(((i % steps.length) + steps.length) % steps.length);
+
+  // Keep the active tab (and its filling progress bar) centered in the
+  // horizontally-scrolling tab bar on narrow screens — scrolls the bar only,
+  // never the page (so the section never auto-scrolls into view on mount).
+  useEffect(() => {
+    const list = tablistRef.current;
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!list || !tab) return;
+    list.scrollTo({
+      left: Math.max(0, tab.offsetLeft - (list.clientWidth - tab.clientWidth) / 2),
+      behavior: reduce ? "auto" : "smooth",
+    });
+  }, [active, reduce]);
 
   return (
     <section className="w-full px-6 sm:px-[60px]">
@@ -120,11 +133,12 @@ export function HowItWorks() {
 
           {/* Tab bar (Figma 286:2030) — doubles as the progress timeline. */}
           <div
+            ref={tablistRef}
             role="tablist"
             aria-label="How it works steps"
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
-            className="flex shrink-0 justify-start overflow-x-auto border-y border-hairline bg-header shadow-[0_0_25px_rgba(0,0,0,0.03)] [scrollbar-width:none] sm:justify-center [&::-webkit-scrollbar]:hidden"
+            className="relative flex shrink-0 justify-start overflow-x-auto border-y border-hairline bg-header shadow-[0_0_25px_rgba(0,0,0,0.03)] [scrollbar-width:none] sm:justify-center [&::-webkit-scrollbar]:hidden"
           >
             {steps.map((label, i) => (
               <button
@@ -134,7 +148,7 @@ export function HowItWorks() {
                 aria-selected={active === i}
                 onClick={() => goTo(i)}
                 className={cn(
-                  "relative shrink-0 border-r border-hairline px-8 py-6 text-center font-sans text-[18px] font-medium leading-[1.2] tracking-[-0.01em] whitespace-nowrap transition-colors first:border-l",
+                  "relative shrink-0 border-r border-hairline px-4 py-4 text-center font-sans text-sm font-medium leading-[1.2] tracking-[-0.01em] whitespace-nowrap transition-colors first:border-l focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset sm:px-8 sm:py-6 sm:text-[18px]",
                   active === i
                     ? "bg-brand/15 text-[#007386] dark:bg-brand/20 dark:text-brand-bright"
                     : "text-foreground hover:bg-foreground/[0.03]",
@@ -165,8 +179,10 @@ export function HowItWorks() {
             ))}
           </div>
 
-          {/* Stage — solid #191F20 panel + sling-ring motif; the diagram fits within. */}
-          <div className="dark relative h-[clamp(20rem,46vw,600px)] w-full overflow-hidden bg-panel text-white">
+          {/* Stage — solid #191F20 panel + sling-ring motif. Fixed-height scaled
+              stage at lg+; below lg it's content-driven (fluid cards) with a floor
+              to reserve space before the cards animate in (avoids layout shift). */}
+          <div className="dark relative flex min-h-[24rem] w-full items-center justify-center overflow-hidden bg-panel px-4 py-10 text-white lg:block lg:h-[clamp(20rem,46vw,600px)] lg:min-h-0 lg:px-0 lg:py-0">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 overflow-hidden text-white/12"
@@ -202,11 +218,31 @@ export function HowItWorks() {
                     exit="exit"
                     className="absolute inset-0 flex items-center justify-center"
                   >
-                    {diagrams[active]}
+                    <ActiveCard />
                   </motion.div>
                 ) : null}
               </AnimatePresence>
             </ScaledDiagram>
+
+            {/* Mobile (< lg): the scaled stage is hidden; the active card reflows
+                fluidly to fill the width at legible type. `mode="wait"` lets one
+                card leave before the next enters so the auto-height stage stays
+                tidy through a swap. Same `key={active}` → same replay-on-step. */}
+            <div className="relative z-10 mx-auto w-full max-w-[34rem] lg:hidden">
+              <AnimatePresence mode="wait">
+                {inView ? (
+                  <motion.div
+                    key={active}
+                    variants={sceneSwapVariants(reduce)}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                  >
+                    <ActiveCard variant="mobile" />
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
