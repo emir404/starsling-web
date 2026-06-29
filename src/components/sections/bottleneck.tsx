@@ -32,7 +32,7 @@ function TitleWithHighlight({
 export function Bottleneck() {
   return (
     <section id="bottleneck" className="w-full overflow-x-clip px-6 sm:px-[60px]">
-      <div className="mx-auto flex max-w-[1320px] flex-col border-l border-hairline lg:flex-row">
+      <div className="mx-auto flex max-w-[1320px] flex-col border-l border-hairline bg-band lg:flex-row">
         {/* Left: heading (top) + problem rows (bottom), padded blueprint column */}
         <div className="flex flex-1 flex-col gap-12 px-6 py-16 sm:px-14 lg:min-h-svh lg:justify-between lg:py-[7.5rem] lg:pr-14">
           <SectionHeading

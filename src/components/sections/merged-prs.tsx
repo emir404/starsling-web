@@ -1,5 +1,6 @@
 import { GitMerge } from "lucide-react";
 
+import { BlueprintStrip } from "@/components/shared/blueprint-strip";
 import { Section, SectionHeading } from "@/components/shared/section";
 import { MERGED_PRS_CONTENT } from "@/content/merged-prs";
 
@@ -15,11 +16,19 @@ export function MergedPrs() {
   return (
     <Section
       id="merged-prs"
-      containerClassName="border-b border-hairline py-20 sm:py-[120px]"
+      containerClassName="relative overflow-hidden border-b border-hairline py-20 sm:py-[120px]"
     >
       <SectionHeading align="start" title={title} subtitle={subtitle} />
 
-      <div className="mt-16 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      {/* Blueprint strip motif (Figma 196:37) — muted slate, along the bottom edge */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 flex translate-y-[40%] justify-center overflow-hidden text-[#334d52]/40"
+      >
+        <BlueprintStrip count={7} />
+      </div>
+
+      <div className="relative mt-16 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {prs.map((pr) => (
           <a
             key={pr.url}

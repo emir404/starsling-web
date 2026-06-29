@@ -19,7 +19,7 @@ const tileClass =
  */
 export function SiteFooter() {
   return (
-    <footer className="relative w-full overflow-hidden bg-[#072227] text-white/80">
+    <footer className="relative w-full overflow-hidden bg-[#191F20] text-white/80">
       <div className="mx-auto w-full max-w-[1320px] px-6 py-20 sm:px-14 sm:py-28">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
           {/* brand + status + theme */}

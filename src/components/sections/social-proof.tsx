@@ -14,7 +14,7 @@ export function SocialProof() {
 
   return (
     <section id="customers" className="w-full px-6 sm:px-[60px]">
-      <div className="mx-auto flex w-full max-w-[1320px] flex-col border-x border-t border-b border-hairline lg:h-[120px] lg:flex-row">
+      <div className="mx-auto flex w-full max-w-[1320px] flex-col border-x border-t border-b border-hairline bg-band lg:h-[120px] lg:flex-row">
         <div className="flex items-center justify-center px-14 py-8 lg:w-[480px] lg:shrink-0 lg:py-0">
           <p className="text-center text-sm text-foreground/80">
             Trusted by industry leaders &amp; fastest growing startups

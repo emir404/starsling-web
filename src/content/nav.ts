@@ -3,9 +3,9 @@ import { SITE_CONFIG } from "@/lib/site";
 
 /** Primary header navigation — maps to the dedicated marketing routes (order + shortcuts from Figma). */
 export const NAV_LINKS: NavLink[] = [
-  { label: "Customers", href: "/customers", shortcut: "C" },
-  { label: "Features", href: "/features", shortcut: "F" },
+  { label: "Case Studies", href: "/customers", shortcut: "C" },
   { label: "Pricing", href: "/pricing", shortcut: "P" },
+  { label: "Blog", href: "/blog", shortcut: "B" },
 ];
 
 /** Decorative status pill shown beside the footer wordmark. */
@@ -20,10 +20,9 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Site",
     links: [
-      { label: "Customers", href: "/customers", shortcut: "C" },
-      { label: "Features", href: "/features", shortcut: "F" },
+      { label: "Case Studies", href: "/customers", shortcut: "C" },
       { label: "Pricing", href: "/pricing", shortcut: "P" },
-      { label: "Blog", href: "#", shortcut: "B" },
+      { label: "Blog", href: "/blog", shortcut: "B" },
     ],
   },
   {

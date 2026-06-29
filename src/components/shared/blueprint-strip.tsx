@@ -22,12 +22,21 @@ export function RadarPing({ className }: { className?: string }) {
   );
 }
 
-/** Four stacked schematic lines linking the pings (drawn from `currentColor` @ 35%). */
-function LineGroup() {
+/**
+ * Four stacked schematic lines linking the pings (drawn from `currentColor` @ 35%).
+ * `tilt` rakes each line ~12° for the vertical-strip variant (Figma 102:11).
+ */
+function LineGroup({ tilt = false }: { tilt?: boolean }) {
   return (
     <div className="flex shrink-0 flex-col gap-6">
       {Array.from({ length: 4 }).map((_, i) => (
-        <span key={i} className="h-[2px] w-[100px] bg-current opacity-[0.35]" />
+        <span
+          key={i}
+          className={cn(
+            "h-[2px] w-[100px] bg-current opacity-[0.35]",
+            tilt && "rotate-[12deg]",
+          )}
+        />
       ))}
     </div>
   );
@@ -55,6 +64,32 @@ export function BlueprintStrip({
         </Fragment>
       ))}
       <LineGroup />
+    </div>
+  );
+}
+
+/**
+ * Vertical blueprint strip: radar pings stacked between groups of raked schematic
+ * lines (Figma 102:11). The column counterpart to {@link BlueprintStrip} — used as
+ * a side rail / column accent. Color is `currentColor`; the caller owns
+ * positioning, clipping, and any overall opacity via the wrapper.
+ */
+export function BlueprintColumn({
+  count = 3,
+  className,
+}: {
+  count?: number;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex w-max flex-col items-center gap-8", className)}>
+      {Array.from({ length: count }).map((_, i) => (
+        <Fragment key={i}>
+          <LineGroup tilt />
+          <RadarPing />
+        </Fragment>
+      ))}
+      <LineGroup tilt />
     </div>
   );
 }

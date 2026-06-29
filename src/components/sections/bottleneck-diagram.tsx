@@ -2,8 +2,7 @@
 
 import { motion, useReducedMotion, type Variants } from "motion/react";
 
-import { MeshGradient } from "@/components/shared/mesh-gradient";
-import { OrbitRings } from "@/components/shared/orbit-rings";
+import { RingConstellation } from "@/components/shared/ring-constellation";
 import { cn } from "@/lib/utils";
 import type { BottleneckBar } from "@/types/content";
 
@@ -147,9 +146,9 @@ function ComparisonBar({ bar, reduce }: { bar: BottleneckBar; reduce: boolean })
 
 /**
  * Animated before/after CI comparison diagram (Figma 282:336, right card). The
- * bars sit on an interactive teal mesh gradient with the orbit-rings
- * illustration blended over it. On scroll into view each bar wipes in with its
- * chip and dimension bracket — the long red CI segment dramatizes the bottleneck.
+ * white bars sit on the solid #191F20 panel with the faint sling-ring
+ * constellation behind them. On scroll into view each bar wipes in with its chip
+ * and dimension bracket — the long red CI segment dramatizes the bottleneck.
  */
 export function BottleneckDiagram({
   bars,
@@ -169,7 +168,7 @@ export function BottleneckDiagram({
         // to content height, leaving a gap. Height `auto` lets flex stretch it
         // to the full section height; the inner div's h-full resolves against
         // that stretched height. min-h covers the mobile (flex-col) case.
-        "relative min-h-[28rem] w-full overflow-hidden shadow-[0_0_12px_rgba(0,0,0,0.04)]",
+        "relative min-h-[28rem] w-full overflow-hidden bg-panel shadow-[0_0_12px_rgba(0,0,0,0.04)]",
         className,
       )}
       initial="hidden"
@@ -177,10 +176,20 @@ export function BottleneckDiagram({
       viewport={{ once: true, margin: "-80px" }}
       variants={{ hidden: {}, show: { transition: { staggerChildren: 0.2 } } }}
     >
-      {/* Backdrop: teal mesh gradient + orbit rings (static, anchored lower-right
-          per Figma 282:364), both behind the bars */}
-      <MeshGradient variant="mesh-bright" className="absolute inset-0" />
-      <OrbitRings className="top-[93%] left-[93%] w-[158%] -translate-x-1/2 -translate-y-1/2" />
+      {/* Backdrop: the faint sling-ring constellation over the solid #191F20 panel,
+          edge-masked toward the lower-right, behind the bars */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden text-white/10"
+        style={{
+          maskImage:
+            "radial-gradient(120% 120% at 70% 80%, #000 75%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(120% 120% at 70% 80%, #000 75%, transparent 100%)",
+        }}
+      >
+        <RingConstellation preset="a" className="absolute inset-0 h-full w-full" />
+      </div>
 
       <motion.div
         className="relative z-10 flex h-full flex-col items-center justify-center gap-20 px-8 py-12"

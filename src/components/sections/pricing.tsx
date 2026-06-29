@@ -43,7 +43,7 @@ export function Pricing() {
       };
 
   return (
-    <Section id="pricing">
+    <Section id="pricing" containerClassName="bg-band">
       <motion.div
         variants={container}
         initial="hidden"
@@ -66,7 +66,7 @@ export function Pricing() {
               variants={fadeUp}
               className={cn(
                 "relative isolate flex flex-col gap-8 overflow-hidden border border-hairline p-8",
-                tier.highlighted ? "z-10 bg-highlight" : "bg-band",
+                tier.highlighted ? "z-10 bg-highlight" : "bg-card",
               )}
             >
               {tier.highlighted ? <BlueprintTexture /> : null}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none" role="img" aria-label="YC Demo Day, June 2025">
+  <rect width="1600" height="900" fill="#191f20"/>
+  <g stroke="#d7eaed" stroke-opacity="0.12" stroke-width="1.5">
+    <line x1="170" y1="210" x2="690" y2="392"/>
+    <line x1="1430" y1="250" x2="912" y2="404"/>
+    <line x1="300" y1="720" x2="760" y2="520"/>
+    <line x1="1310" y1="690" x2="852" y2="520"/>
+    <line x1="240" y1="470" x2="676" y2="446"/>
+  </g>
+  <g fill="none" stroke="#d7eaed" stroke-opacity="0.18" stroke-width="1.5">
+    <circle cx="800" cy="430" r="120"/>
+    <circle cx="800" cy="430" r="64"/>
+  </g>
+  <circle cx="800" cy="430" r="13" fill="#30a6bb"/>
+  <g fill="none" stroke="#d7eaed" stroke-opacity="0.16" stroke-width="1.5">
+    <circle cx="240" cy="470" r="40"/>
+    <circle cx="240" cy="470" r="15"/>
+    <circle cx="1360" cy="640" r="40"/>
+    <circle cx="1360" cy="640" r="15"/>
+  </g>
+  <text x="800" y="648" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="27" letter-spacing="5" fill="#d7eaed" fill-opacity="0.55">YC DEMO DAY · JUNE 2025</text>
+</svg>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, type CSSProperties } from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 import { Highlight } from "@/components/shared/highlight";
-import { OrbitRings } from "@/components/shared/orbit-rings";
+import { CASE_STUDY_SLUG_BY_COMPANY } from "@/content/customers";
 import { TESTIMONIALS } from "@/content/testimonials";
 import type { Testimonial, TestimonialMetric } from "@/types/content";
 
@@ -76,16 +78,9 @@ export function Testimonials() {
 
 /** One full-width testimonial card: quote, attribution row, wordmark + orbit decor. */
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+  const caseStudySlug = CASE_STUDY_SLUG_BY_COMPANY[testimonial.company];
   return (
     <figure className="relative flex min-h-[480px] flex-col justify-end gap-10 overflow-hidden px-6 pb-6 pt-20 sm:min-h-[524px] sm:gap-12 sm:p-14">
-      {/* Faint orbit rings tucked into the top-right corner (hero export reads on a
-          light surface; the white /problem export would be invisible here). */}
-      <OrbitRings
-        src="/hero/orbits.svg"
-        imgClassName="opacity-100"
-        className="-top-[38%] -right-[8%] z-0 w-[58%]"
-      />
-
       {/* Company wordmark, top-right */}
       <div className="absolute right-6 top-6 z-10 sm:right-14 sm:top-14">
         <Wordmark testimonial={testimonial} />
@@ -104,6 +99,15 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
         {testimonial.metrics?.map((metric) => (
           <MetricChip key={metric.label} metric={metric} />
         ))}
+        {caseStudySlug ? (
+          <Link
+            href={`/customers/${caseStudySlug}`}
+            className="group/cs inline-flex items-center gap-1.5 self-center font-mono text-xs tracking-[0.04em] text-foreground/60 uppercase transition-colors hover:text-foreground"
+          >
+            Read the case study
+            <ArrowUpRight className="size-3.5 transition-transform group-hover/cs:translate-x-0.5 group-hover/cs:-translate-y-0.5" />
+          </Link>
+        ) : null}
       </figcaption>
     </figure>
   );

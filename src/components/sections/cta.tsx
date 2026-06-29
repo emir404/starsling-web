@@ -1,7 +1,7 @@
 import { CTA_CONTENT } from "@/content/cta";
 import { CtaForm } from "@/components/sections/cta-form";
 import { CtaEditorStage } from "@/components/sections/cta-editor-stage";
-import { OrbitRings } from "@/components/shared/orbit-rings";
+import { RingConstellation } from "@/components/shared/ring-constellation";
 
 /**
  * Eased (smoothstep) top fade for the gradient — transparency (a mask), not a
@@ -9,19 +9,18 @@ import { OrbitRings } from "@/components/shared/orbit-rings";
  * themes. (A colour fade to `--background` turned black in dark mode.) The eased
  * alpha curve ramps slowly at both ends, so there's no banded "line" that a plain
  * linear ramp leaves. The fade now spans the FULL height — a continuous smoothstep
- * from transparent at the top to solid teal only at the very bottom edge — so the
- * band reads mostly white, deepening to teal behind the heading + form.
+ * from transparent at the top to the solid #191F20 only at the very bottom edge —
+ * so the band reads mostly page-light, deepening to #191F20 behind the heading + form.
  */
 const BG_MASK =
   "linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.04) 12.5%, rgba(0,0,0,0.16) 25%, rgba(0,0,0,0.32) 37.5%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.68) 62.5%, rgba(0,0,0,0.84) 75%, rgba(0,0,0,0.96) 87.5%, #000 100%)";
 
 /**
- * Closing CTA band (Figma node 282:883). A full-bleed teal mesh-gradient +
- * orbit-rings band: the exact Figma mesh (the inlined static `cta-mesh.svg` —
- * five soft gaussian blobs, node 289:4067) backs it, with the
+ * Closing CTA band (Figma node 282:883). A full-bleed band on the solid #191F20
+ * panel with the sling-ring constellation motif behind it and the light
  * `.github/workflows/ci.yml` runner-swap editor card across the top (the shared
- * `EditorCard`, scaled to the Figma size) dissolving into the gradient via a
- * mask, the heading bottom-left and the sub-line + waitlist form bottom-right,
+ * `EditorCard`, scaled to the Figma size) dissolving into the panel via a mask,
+ * the heading bottom-left and the sub-line + waitlist form bottom-right,
  * all in white. The background spans the full viewport width while the content
  * stays aligned to the site's 1320px grid; the top edge fades into the page
  * background for a clean seam.
@@ -32,22 +31,28 @@ const BG_MASK =
  */
 export function Cta() {
   return (
-    <section id="waitlist" className="relative isolate w-full overflow-hidden">
-      {/* Backdrop: the exact Figma mesh (node 289:4067) — five soft gaussian-blurred
-          teal blobs + noise grain — as a static SVG over a teal base, sized to cover.
-          Its top edge is masked to transparency (BG_MASK) so the band dissolves into
-          the near-white section above: the eased white-at-top → teal transition. */}
+    <section
+      id="waitlist"
+      className="relative isolate w-full overflow-hidden text-white"
+    >
+      {/* Backdrop: the solid #191F20 panel, its top edge masked to transparency
+          (BG_MASK) so the band dissolves into the near-white section above. */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[#1d7d8e] bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-panel"
         style={{
-          backgroundImage: "url('/cta/cta-mesh.svg')",
           maskImage: BG_MASK,
           WebkitMaskImage: BG_MASK,
         }}
       />
-      {/* Faint orbit rings over the gradient, behind the content. */}
-      <OrbitRings className="top-[38%] left-1/2 w-[82%] -translate-x-1/2 -translate-y-1/2" />
+      {/* Sling-ring constellation over the panel — visible, fading in with the band. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden text-white/12"
+        style={{ maskImage: BG_MASK, WebkitMaskImage: BG_MASK }}
+      >
+        <RingConstellation preset="a" className="absolute inset-0 h-full w-full" />
+      </div>
 
       {/* Content centered to the 1320px grid; card up top, heading + form pinned
           to the bottom. The large top padding matches the design, where the card

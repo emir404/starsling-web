@@ -15,7 +15,7 @@ import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react"
 /** Fixed coordinate plane the nodes live on; the SVG scales it to the footer width. */
 const PLANE = { w: 1440, h: 680 } as const;
 
-const LINE = "rgba(100,211,230,0.35)";
+const LINE = "rgba(100,211,230,0.2)";
 const ACCENT = "#30a6bb";
 
 type FooterNode = { id: number; x: number; y: number };

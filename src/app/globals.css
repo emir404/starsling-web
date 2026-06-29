@@ -10,6 +10,7 @@
   --color-header: var(--header);
   --color-band: var(--band);
   --color-band-border: var(--band-border);
+  --color-panel: var(--panel);
 
   /* Brand (teal family, from Figma) */
   --color-brand: var(--brand);
@@ -91,6 +92,9 @@
   --header: #fbfdfe;
   --band: #f5f8fa;
   --band-border: #eff3f4;
+  /* Solid dark "panel" surface — the single ground for diagram panels / dark
+     bands, replacing the old teal mesh gradients. Fixed across light & dark. */
+  --panel: #191f20;
   --card: #ffffff;
   --card-foreground: #080c0d;
   --popover: #ffffff;
@@ -262,5 +266,16 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* "How it works" tab timeline — the active step's bar fills over its dwell, then
+   advances. Driven by `animation-play-state` so hover / off-screen freeze it. */
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
